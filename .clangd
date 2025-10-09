@@ -1,0 +1,6 @@
+CompileFlags:
+    Remove:
+        - -mno-direct-extern-access
+    Add: 
+        - -fno-direct-access-external-data
+        

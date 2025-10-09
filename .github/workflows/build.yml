@@ -1,0 +1,51 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/build.yml"
+      - "include/**/*"
+      - "src/**/*"
+      - "test/**/*"
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/build.yml"
+      - "include/**/*"
+      - "src/**/*"
+      - "test/**/*"
+
+concurrency:
+  group: build-${{ github.ref_name }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+    name: Build
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout 🛒
+        uses: actions/checkout@v2
+      - name: Intall dependencies 📥
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: qt6-base-dev qt6-webengine-dev layer-shell-qt
+          version: 1.0
+      - name: Build 🏗️
+        run: make BUILD_PROFILE=RELEASE
+      - name: Define variables 📐
+        id: set-pr-sha
+        shell: bash
+        run: echo "SHORT_PR_SHA=$(git rev-parse HEAD | cut -c 1-7)" >> "$GITHUB_OUTPUT"
+      - name: Upload artifacts 🚀
+        uses: actions/upload-artifact@v4
+        with: {
+          name: "tosu-overlay-${{ steps.set-pr-sha.outputs.SHORT_PR_SHA || github.ref_name }}",
+          path: build/bin/tosu-overlay
+        }
