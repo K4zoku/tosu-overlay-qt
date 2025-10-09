@@ -38,7 +38,8 @@ jobs:
           packages: qt6-base-dev qt6-webengine-dev layer-shell-qt
           version: 1.0
       - name: Build 🏗️
-        run: make BUILD_PROFILE=RELEASE
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build
       - name: Define variables 📐
         id: set-pr-sha
         shell: bash
@@ -46,6 +47,6 @@ jobs:
       - name: Upload artifacts 🚀
         uses: actions/upload-artifact@v4
         with: {
-          name: "tosu-overlay-${{ steps.set-pr-sha.outputs.SHORT_PR_SHA || github.ref_name }}",
-          path: build/bin/tosu-overlay
+          name: "tosu-overlay-qt-${{ steps.set-pr-sha.outputs.SHORT_PR_SHA || github.ref_name }}",
+          path: build/tosu-overlay-qt
         }
