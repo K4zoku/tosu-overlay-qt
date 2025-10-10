@@ -23,6 +23,7 @@ Overlay::Overlay(QWidget *parent) : QWidget(parent) {
 
     this->mTosuWebView = new TosuWebView(this);
     connect(this->mTosuWebView, SIGNAL(loadFinished(bool)), this, SLOT(onLoaded(bool)));
+    connect(this->mTosuWebView, SIGNAL(editingEnd()),       this, SIGNAL(editingEnded()));
     connect(this, SIGNAL(editingStarted()), this->mTosuWebView, SLOT(onEditingStarted()));
     connect(this, SIGNAL(editingEnded()),   this->mTosuWebView, SLOT(onEditingEnded()));
 
@@ -88,27 +89,21 @@ void Overlay::onEditingToggled() {
 }
 
 void Overlay::onEditingStarted() {
-    if (!ready) {
-        return;
-    }
     if (!this->isVisible()) {
         this->show();
     }
-    QRegion mask= QRegion();
-    this->setMask(mask);
     QWindow *window = this->windowHandle();
+    QRegion mask = QRegion();
+    window->setMask(mask);
     if (auto layerShellWindow = LayerShellQt::Window::get(window)) {
         layerShellWindow->setKeyboardInteractivity(LayerShellQt::Window::KeyboardInteractivityExclusive);
     }
 }
 
 void Overlay::onEditingEnded() {
-    if (!ready) {
-        return;
-    }
-    QRegion mask= QRegion(this->geometry());
-    this->setMask(mask);
     QWindow *window = this->windowHandle();
+    QRegion mask = QRegion(window->geometry());
+    window->setMask(mask);
     if (auto layerShellWindow = LayerShellQt::Window::get(window)) {
         layerShellWindow->setKeyboardInteractivity(LayerShellQt::Window::KeyboardInteractivityNone);
     }

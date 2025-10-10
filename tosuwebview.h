@@ -14,9 +14,14 @@ public:
     ~TosuWebView();
     void setTosuBaseUrl(const QUrl &baseUrl);
 
+signals:
+    void editingEnd();
+
 public slots:
     void onEditingStarted();
     void onEditingEnded();
+    void loaded(bool ok);
+    void escKeyPressed();
 
 private:
     QUrl m_baseUrl;
