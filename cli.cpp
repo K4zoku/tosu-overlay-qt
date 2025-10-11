@@ -93,25 +93,26 @@ bool CLI::parseMonitorOption(CommandLineParseResult *result) {
     }
     bool parseOk;
     int screenId = value.toInt(&parseOk);
-    if (!parseOk) {
+    if (parseOk) {
+        if (screenId < screens.size()) {
+            result->screen = screens[screenId];
+            return true;
+        }
+    } else {
         foreach (auto screen, screens) {
             if (screen->name() == value) {
                 result->screen = screen;
-                break;
+                return true;
             }
         }
         if (!result->screen) {
             result->statusCode = CommandLineParseResult::Status::Error;
-            auto errorString = tr("main", "Invalid monitor '%1'").arg(value);
+            auto errorString = tr("main", "Invalid monitor %1").arg(value);
             errorString.append("\n");
             errorString.append(availableMonitorMessage(screens));
             result->errorString = errorString;
             return false;
         }
-    }
-    if (screenId < screens.size()) {
-        result->screen = screens[screenId];
-        return true;
     }
     result->statusCode = CommandLineParseResult::Status::Error;
     auto errorString = tr("main", "Invalid monitor %1").arg(QString::number(screenId));
@@ -136,10 +137,9 @@ CommandLineParseResult CLI::parseCommandLine() {
         &CLI::parseTosuUrlOption
     };
     for (auto &parser : parsers) {
-        if ((this->*parser)(&result)) {
-            continue;
+        if (!(this->*parser)(&result)) {
+            break;
         }
-        break;
     }
     return result;
 }

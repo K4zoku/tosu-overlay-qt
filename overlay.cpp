@@ -9,7 +9,6 @@
 Overlay::Overlay(QWidget *parent) : QWidget(parent) {
     this->setAttribute(Qt::WA_TranslucentBackground, true);
     this->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
-    this->initLayerShell();
 
     auto *layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
@@ -33,7 +32,9 @@ Overlay::Overlay(QWidget *parent) : QWidget(parent) {
     connect(this->mSystemTray, SIGNAL(toggleEditing()),    this, SIGNAL(toggleEditing()));
     connect(this->mSystemTray, SIGNAL(toggleVisibility()), this, SIGNAL(toggleVisibility()));
     connect(this->mSystemTray, SIGNAL(requestQuit()),      this, SIGNAL(requestQuit()));
-    this->editingEnded();
+
+    this->show();
+    this->hide();
 }
 
 void Overlay::showSysTray() {
@@ -45,53 +46,40 @@ void Overlay::setTosuUrl(QUrl url) {
 }
 
 void Overlay::initLayerShell() {
-    this->show();
-    this->hide();
-    QWindow *window = this->windowHandle();
-    QScreen *screen = this->screen();
-    if (auto layerShellWindow = LayerShellQt::Window::get(window)) {
+    if (auto layerShellWindow = LayerShellQt::Window::get(this->windowHandle())) {
         layerShellWindow->setExclusiveZone(-1);
         layerShellWindow->setScope("tosu-overlay");
         layerShellWindow->setLayer(LayerShellQt::Window::LayerOverlay);
-        layerShellWindow->setDesiredSize(screen->availableSize());
+        layerShellWindow->setKeyboardInteractivity(LayerShellQt::Window::KeyboardInteractivityNone);
     }
 }
 
 void Overlay::onLoaded(bool ok) {
-    this->ready = ok;
-    if (ok) {
-
+    if (ok) return;
+    QMessageBox msgBox;
+    msgBox.setText(tr("Error connecting with tosu, is it running?"));
+    QPushButton *yes = msgBox.addButton(tr("Yes, reload the overlay"), QMessageBox::YesRole);
+    QPushButton *no = msgBox.addButton(tr("No, close the overlay"), QMessageBox::NoRole);
+    msgBox.setDefaultButton(yes);
+    msgBox.setEscapeButton(no);
+    msgBox.exec();
+    if (msgBox.clickedButton() == yes) {
+        this->mTosuWebView->reload();
     } else {
-        QMessageBox msgBox;
-        msgBox.setText(tr("Error connecting with tosu, is it running?"));
-        QPushButton * yes = msgBox.addButton(tr("Yes, reload the overlay"), QMessageBox::YesRole);
-        QPushButton * no = msgBox.addButton(tr("No, close the overlay"), QMessageBox::NoRole);
-        msgBox.setDefaultButton(yes);
-        msgBox.setEscapeButton(no);
-        msgBox.exec();
-        if (msgBox.clickedButton() == yes) {
-            this->mTosuWebView->reload();
-        } else {
-            requestQuit();
-        }
+        emit requestQuit();
     }
 }
 
 void Overlay::onEditingToggled() {
-    if (!ready) {
-        return;
-    }
-    if (this->mEditing ^= true) {
-        emit editingStarted();
-    } else {
+    if (this->mEditing) {
         emit editingEnded();
+    } else {
+        emit editingStarted();
     }
 }
 
 void Overlay::onEditingStarted() {
-    if (!this->isVisible()) {
-        this->show();
-    }
+    this->mEditing = true;
     QWindow *window = this->windowHandle();
     QRegion mask = QRegion();
     window->setMask(mask);
@@ -101,6 +89,7 @@ void Overlay::onEditingStarted() {
 }
 
 void Overlay::onEditingEnded() {
+    this->mEditing = false;
     QWindow *window = this->windowHandle();
     QRegion mask = QRegion(window->geometry());
     window->setMask(mask);
@@ -110,9 +99,6 @@ void Overlay::onEditingEnded() {
 }
 
 void Overlay::onVisibilityToggled() {
-    if (!ready) {
-        return;
-    }
     if (this->isVisible()) {
         this->hide();
     } else {

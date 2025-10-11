@@ -13,6 +13,7 @@ public:
     Overlay(QWidget *parent = nullptr);
     void setTosuUrl(QUrl url);
     void showSysTray();
+    void initLayerShell();
 
 signals:
     void toggleEditing();
@@ -31,10 +32,8 @@ private slots:
 
 private:
     bool mEditing = false;
-    bool ready = false;
     TosuWebView *mTosuWebView = nullptr;
     SystemTray *mSystemTray = nullptr;
-    void initLayerShell();
 };
 
 #endif // OVERLAY_H

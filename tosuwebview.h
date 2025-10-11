@@ -21,10 +21,24 @@ public slots:
     void onEditingStarted();
     void onEditingEnded();
     void loaded(bool ok);
-    void escKeyPressed();
+    void onKeyDown(QString key);
 
 private:
     QUrl m_baseUrl;
+    void javaScriptConsoleMessage(QWebEnginePage::JavaScriptConsoleMessageLevel level, const QString &message, int lineNumber, const QString &sourceID);
+};
+
+class WebChannelObject : public QObject
+{
+    Q_OBJECT
+public:
+    WebChannelObject(QObject *parent = nullptr);
+
+public slots:
+    void onKeyDown(QString key);
+
+signals:
+    void keyDown(QString key);
 };
 
 #endif // TOSUWEBVIEW_H

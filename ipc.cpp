@@ -21,14 +21,12 @@ bool IPC::connect() {
 }
 
 bool IPC::registerService() {
-    qDebug("Registering D-Bus Service...");
     auto connection = QDBusConnection::sessionBus();
     if (!connection.registerService(SERVICE_NAME)) {
         qWarning("%s\n", qPrintable(connection.lastError().message()));
         return false;
     }
     connection.registerObject("/", this, QDBusConnection::ExportAllSlots);
-    qDebug("Register successfully");
     return true;
 }
 

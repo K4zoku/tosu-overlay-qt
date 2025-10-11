@@ -7,7 +7,9 @@ TosuWebView::TosuWebView(QWidget *parent, const QUrl &baseUrl) : QWebEngineView{
     this->page()->setBackgroundColor(Qt::transparent);
     QWebChannel * webChannel= new QWebChannel(this);
     this->page()->setWebChannel(webChannel);
-    webChannel->registerObject("tosu", this);
+    WebChannelObject * object = new WebChannelObject(this);
+    webChannel->registerObject("tosu", object);
+    connect(object, SIGNAL(keyDown(QString)), this, SLOT(onKeyDown(QString)));
     connect(this, SIGNAL(loadFinished(bool)), this, SLOT(loaded(bool)));
 }
 
@@ -21,18 +23,7 @@ static const char *INJECT_WEBCHANNEL_SCRIPT =
     "s.onload = function() {"
         "let tosu = null;"
         "new QWebChannel(qt.webChannelTransport, (channel) => tosu = channel.objects.tosu);"
-        "document.addEventListener('keydown', function(event) {"
-            "event = event || window.event;"
-            "let isEscape = false;"
-            "if ('key' in event) {"
-                "isEscape = (event.key === 'Escape' || event.key === 'Esc');"
-            "} else {"
-                "isEscape = (event.keyCode === 27);"
-            "}"
-            "if (isEscape) {"
-                "tosu && tosu.escKeyPressed();"
-            "}"
-        "});"
+        "document.addEventListener('keydown', function (e) { tosu && tosu.onKeyDown(event.key) });"
     "};"
     "s.src = 'qrc:///qtwebchannel/qwebchannel.js';"
     "document.body.appendChild(s);"
@@ -40,7 +31,6 @@ static const char *INJECT_WEBCHANNEL_SCRIPT =
 
 void TosuWebView::loaded(bool ok) {
     if (!ok) return;
-    qDebug() << __FUNCTION__;
     this->page()->runJavaScript(INJECT_WEBCHANNEL_SCRIPT);
 }
 
@@ -51,8 +41,10 @@ void TosuWebView::setTosuBaseUrl(const QUrl &baseUrl) {
     this->setUrl(overlayUrl);
 }
 
-void TosuWebView::escKeyPressed() {
-    emit editingEnd();
+void TosuWebView::onKeyDown(QString key) {
+    if (key == "Esc" || key == "Escape") {
+        emit editingEnd();
+    }
 }
 
 void TosuWebView::onEditingStarted() {
@@ -61,4 +53,19 @@ void TosuWebView::onEditingStarted() {
 
 void TosuWebView::onEditingEnded() {
     this->page()->runJavaScript("window.postMessage('editingEnded')");
+}
+
+
+void TosuWebView::javaScriptConsoleMessage(QWebEnginePage::JavaScriptConsoleMessageLevel level, const QString &message, int lineNumber, const QString &sourceID)
+{
+    Q_UNUSED(level)
+    Q_UNUSED(message)
+    Q_UNUSED(lineNumber)
+    Q_UNUSED(sourceID)
+}
+
+WebChannelObject::WebChannelObject(QObject *parent) : QObject{parent} {}
+
+void WebChannelObject::onKeyDown(QString key) {
+    emit this->keyDown(key);
 }
