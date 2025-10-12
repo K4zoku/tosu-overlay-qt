@@ -39,13 +39,13 @@ jobs:
       - name: Intall dependencies 📥
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          packages: qt6-base-dev qt6-webengine-dev
+          packages: qt6-base-dev qt6-webengine-dev liblayershellqtinterface6 qml6-module-org-kde-layershell
           version: 1.0
       - name: Install custom package 🗄️
         run: |
           sudo apt-get update
-          wget http://ppa.launchpad.net/kubuntu-ppa/backports/ubuntu/pool/main/l/layer-shell-qt/liblayershellqtinterface-dev_6.4.5-0ubuntu1~ubuntu25.04~ppa1_amd64.deb
-          sudo dpkg -i liblayershellqtinterface-dev_6.4.5-0ubuntu1~ubuntu25.04~ppa1_amd64.deb || true
+          wget  	http://archive.ubuntu.com/ubuntu/pool/universe/l/layer-shell-qt/liblayershellqtinterface-dev_6.3.4-0ubuntu1_amd64.deb
+          sudo dpkg -i liblayershellqtinterface-dev_6.3.4-0ubuntu1_amd64.deb || true
           sudo apt-get install -f
       - name: Build 🏗️
         run: |
