@@ -40,7 +40,7 @@ void WebView::onLoaded(bool ok) {
         auto no = msgBox->addButton(tr("No, close the overlay"), QMessageBox::NoRole);
         msgBox->setDefaultButton(yes);
         msgBox->setEscapeButton(no);
-        connect(msgBox, SIGNAL(rejected()), this, SLOT(onQuitRequested()));
+        connect(msgBox, SIGNAL(rejected()), parentWidget(), SLOT(onQuitRequested()));
         connect(msgBox, &QMessageBox::accepted, this, [this]() {
             this->reload();
         });
