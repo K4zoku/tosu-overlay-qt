@@ -4,11 +4,13 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QWebChannel>
+#include <QMessageBox>
+#include <QDebug>
 
 WebView::WebView(QWidget *parent, const QUrl baseUrl) : QWebEngineView{parent} {
     this->setPage(new WebPage(this));
     this->setTosuBaseUrl(baseUrl);
-    connect(this, SIGNAL(loadFinished(bool)), this, SLOT(onLoaded(bool)));
+    connect(this->page(), SIGNAL(loadFinished(bool)), this, SLOT(onLoaded(bool)));
 }
 
 WebView::~WebView() {
@@ -29,20 +31,21 @@ static const char *INJECT_WEBCHANNEL_SCRIPT =
 
 void WebView::onLoaded(bool ok) {
     if (ok) {
-        this->page()->runJavaScript(INJECT_WEBCHANNEL_SCRIPT);
+        page()->runJavaScript(INJECT_WEBCHANNEL_SCRIPT);
     } else {
-        QMessageBox msgBox;
-        msgBox.setText(tr("Error connecting with tosu, is it running?"));
-        QPushButton *yes = msgBox.addButton(tr("Yes, reload the overlay"), QMessageBox::YesRole);
-        QPushButton *no = msgBox.addButton(tr("No, close the overlay"), QMessageBox::NoRole);
-        msgBox.setDefaultButton(yes);
-        msgBox.setEscapeButton(no);
-        msgBox.exec();
-        if (msgBox.clickedButton() == yes) {
-            reload();
-        } else {
-            QMetaObject::invokeMethod(QApplication::instance(), &QApplication::quit, Qt::QueuedConnection);
-        }
+        parentWidget()->hide();
+        auto *msgBox = new QMessageBox(this->parentWidget());
+        msgBox->setText(tr("Error connecting with tosu, is it running?"));
+        auto yes = msgBox->addButton(tr("Yes, reload the overlay"), QMessageBox::YesRole);
+        auto no = msgBox->addButton(tr("No, close the overlay"), QMessageBox::NoRole);
+        msgBox->setDefaultButton(yes);
+        msgBox->setEscapeButton(no);
+        connect(msgBox, SIGNAL(rejected()), this, SLOT(onQuitRequested()));
+        connect(msgBox, &QMessageBox::accepted, this, [this]() {
+            this->reload();
+        });
+        msgBox->setModal(false);
+        msgBox->show();
     }
 }
 
