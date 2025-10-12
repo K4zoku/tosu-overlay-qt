@@ -43,7 +43,7 @@ jobs:
       - name: Intall dependencies 📥
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          packages: qt6-base-dev qt6-webengine-dev liblayershellqtinterface-dev
+          packages: qt6-base-dev qt6-webengine-dev layer-shell-qt
           version: 1.0
       - name: Build 🏗️
         run: |
