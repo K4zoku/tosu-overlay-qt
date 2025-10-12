@@ -2,7 +2,7 @@ name: Build
 
 on:
   push:
-    branches: [main]
+    branches: [ci-testing]
     paths:
       - ".github/workflows/build.yml"
       - "*.cpp"
@@ -12,7 +12,7 @@ on:
     tags:
       - v*.**
   pull_request:
-    branches: [main]
+    branches: [ci-testing]
     paths:
       - ".github/workflows/build.yml"
       - "*.cpp"
@@ -36,17 +36,15 @@ jobs:
     steps:
       - name: Checkout 🛒
         uses: actions/checkout@v2
+      - name: Add repository 🗄️
+        run: |
+          sudo add-apt-repository ppa:kubuntu-ppa/ppa
+          sudo apt-get update
       - name: Intall dependencies 📥
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          packages: qt6-base-dev qt6-webengine-dev liblayershellqtinterface6 qml6-module-org-kde-layershell
+          packages: qt6-base-dev qt6-webengine-dev liblayershellqtinterface-dev
           version: 1.0
-      - name: Install custom package 🗄️
-        run: |
-          sudo apt-get update
-          wget  	http://archive.ubuntu.com/ubuntu/pool/universe/l/layer-shell-qt/liblayershellqtinterface-dev_6.3.4-0ubuntu1_amd64.deb
-          sudo dpkg -i liblayershellqtinterface-dev_6.3.4-0ubuntu1_amd64.deb || true
-          sudo apt-get install -f
       - name: Build 🏗️
         run: |
           cmake -S . -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build
