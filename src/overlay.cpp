@@ -50,6 +50,7 @@ void Overlay::setTosuUrl(QUrl url) {
 }
 
 void Overlay::initLayerShell() {
+    if (QApplication::platformName() != "wayland") return;
     if (auto layerShellWindow = Window::get(windowHandle())) {
         layerShellWindow->setExclusiveZone(-1);
         layerShellWindow->setScope("tosu-overlay");
