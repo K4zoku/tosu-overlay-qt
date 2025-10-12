@@ -1,0 +1,21 @@
+{
+    "KPlugin": {
+        "Name": "Tosu Overlay",
+        "Description": "Listen to osu! & osu!lazer window geometry and send it to tosu overlay",
+        "Icon": "tosu-overlay",
+        
+        "Authors": [
+            {
+                "Email": "k4zoku@pm.me",
+                "Name": "Kazoku"
+            }
+        ],
+        "Id": "tosu-overlay",
+        "Version": "1.0.0",
+        "License": "MIT",
+        "Website": "https://github.com/K4zoku/tosu-overlay-qt"
+    },
+    "X-Plasma-API": "javascript",
+    "X-Plasma-MainScript": "code/main.js",
+    "KPackageStructure": "KWin/Script"
+}

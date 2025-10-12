@@ -5,6 +5,7 @@
 #include "webview.h"
 
 #include <QWidget>
+#include <QRect>
 
 class Overlay : public QWidget
 {
@@ -21,6 +22,9 @@ signals:
     void requestQuit();
     void toggleVisibility();
 
+public slots:
+    void onOsuGeometryChanged(QRect rect);
+
 private slots:
     void onEditingStarted();
     void onEditingEnded();
@@ -29,9 +33,11 @@ private slots:
     void onQuitRequested();
 
 private:
+    void setOverlayGeometry(QRect rect);
     bool editing = false;
     WebView *webView = nullptr;
     SystemTray *systemTray = nullptr;
+    std::function<void(QRect)> throttledResize = nullptr;
 };
 
 #endif // OVERLAY_H

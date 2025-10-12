@@ -7,6 +7,7 @@
 #include <QScreen>
 #include <QUrl>
 #include <optional>
+#include <qcommandlineoption.h>
 
 struct CommandLineParseResult
 {
@@ -19,6 +20,7 @@ struct CommandLineParseResult
     };
     IpcCommand command = IpcCommand::None;
     Status status = Status::Ok;
+    bool attach = false;
     std::optional<QString> error = std::nullopt;
     std::optional<QScreen*> screen = std::nullopt;
     std::optional<QUrl> url = std::nullopt;
@@ -32,6 +34,7 @@ public:
 private:
     QCommandLineOption optionUrl;
     QCommandLineOption optionMonitor;
+    QCommandLineOption optionAttach;
     QCommandLineOption optionIpcToggleEdit;
     QCommandLineOption optionIpcToggleOverlay;
     QCommandLineOption optionQuit;

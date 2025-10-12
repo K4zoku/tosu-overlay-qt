@@ -64,3 +64,7 @@ bool Ipc::call(const int command) {
     }
     return true;
 }
+
+void Ipc::geometryChanged(const int x, const int y, const int width, const int height) {
+    emit ipcGeometryChanged(QRect(x, y, width, height));
+}

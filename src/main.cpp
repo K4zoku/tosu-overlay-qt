@@ -46,7 +46,11 @@ int main(int argc, char *argv[]) {
         QObject::connect(&ipc, SIGNAL(ipcToggleOverlay()), &overlay, SIGNAL(toggleVisibility()));
         QObject::connect(&ipc, SIGNAL(ipcToggleEditing()), &overlay, SIGNAL(toggleEditing()));
         QObject::connect(&ipc, SIGNAL(ipcQuit()), &overlay, SIGNAL(requestQuit()));
-        overlay.setGeometry((*options.screen)->geometry());
+        if (options.attach) {
+            QObject::connect(&ipc, SIGNAL(ipcGeometryChanged(QRect)), &overlay, SLOT(onOsuGeometryChanged(QRect)));
+        } else {
+            overlay.setGeometry((*options.screen)->geometry());
+        }
         overlay.setTosuUrl(*options.url);
         overlay.initLayerShell();
         overlay.show();

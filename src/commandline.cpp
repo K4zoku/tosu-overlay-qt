@@ -15,6 +15,13 @@ CommandLineParser::CommandLineParser() : QCommandLineParser(),
         QApplication::translate("main", "Monitor to display overlay on, run with empty flag to show list of monitor"),
         "monitor"
     ),
+    optionAttach(
+        QStringList() << "a" << "attach", 
+        QApplication::translate("main", 
+            "Attach overlay to osu! window, require external script to send geometry."
+            "Using this option will ignore --monitor option"
+        )
+    ),
     optionIpcToggleEdit(
         QStringList() << "e" << "ipc-toggle-edit",
         QApplication::translate("main", "Send 'toggle-edit' command to the running overlay")
@@ -28,21 +35,22 @@ CommandLineParser::CommandLineParser() : QCommandLineParser(),
         QApplication::translate("main", "Send 'quit' command to the running overlay")
     )
 {
-    this->optionHelp = this->addHelpOption();
-    this->optionVersion = this->addVersionOption();
-    this->addOption(this->optionUrl);
-    this->addOption(this->optionMonitor);
-    this->addOption(this->optionIpcToggleEdit);
-    this->addOption(this->optionIpcToggleOverlay);
-    this->addOption(this->optionQuit);
+    optionHelp = addHelpOption();
+    optionVersion = addVersionOption();
+    addOption(optionUrl);
+    addOption(optionMonitor);
+    addOption(optionAttach);
+    addOption(optionIpcToggleEdit);
+    addOption(optionIpcToggleOverlay);
+    addOption(optionQuit);
 }
 
 bool CommandLineParser::parseCommonOptions(CommandLineParseResult *result) {
-    if (this->isSet(*this->optionHelp)) {
+    if (isSet(*optionHelp)) {
         result->status = CommandLineParseResult::Status::HelpRequested;
         return false;
     }
-    if (this->isSet(*this->optionVersion)) {
+    if (isSet(*optionVersion)) {
         result->status = CommandLineParseResult::Status::VersionRequested;
         return false;
     }
@@ -51,16 +59,16 @@ bool CommandLineParser::parseCommonOptions(CommandLineParseResult *result) {
 
 bool CommandLineParser::parseIpcOption(CommandLineParseResult *result) {
     result->status = CommandLineParseResult::Status::IpcRequested;
-    if (this->isSet(this->optionIpcToggleEdit)) {
+    if (isSet(optionIpcToggleEdit)) {
         result->command = IpcCommand::ToggleEditing;
         return false;
     }
-    if (this->isSet(this->optionIpcToggleOverlay)) {
+    if (isSet(optionIpcToggleOverlay)) {
         result->command = IpcCommand::ToggleOverlay;
         return false;
     }
 
-    if (this->isSet(this->optionQuit)) {
+    if (isSet(optionQuit)) {
         result->command = IpcCommand::QuitOverlay;
         return false;
     }
@@ -78,11 +86,15 @@ static inline QString availableMonitorMessage(QList<QScreen*> screens) {
 }
 
 bool CommandLineParser::parseMonitorOption(CommandLineParseResult *result) {
-    if (!this->isSet(this->optionMonitor)) {
+    if (isSet(optionAttach)) {
+        result->attach = true;
+        return true;
+    }
+    if (!isSet(optionMonitor)) {
         result->screen = QApplication::primaryScreen();
         return true;
     }
-    auto value = this->value(this->optionMonitor);
+    auto value = this->value(optionMonitor);
     auto screens = QApplication::screens();
     if (value.isEmpty()) {
         result->status = CommandLineParseResult::Status::Error;
@@ -121,7 +133,7 @@ bool CommandLineParser::parseMonitorOption(CommandLineParseResult *result) {
 }
 
 bool CommandLineParser::parseTosuUrlOption(CommandLineParseResult *result) {
-    QUrl url(this->value(this->optionUrl));
+    QUrl url(value(optionUrl));
     result->url = url;
     return true;
 }

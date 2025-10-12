@@ -1,10 +1,14 @@
 #include "overlay.h"
+#include "qfunctionutils.h"
 
 #include <LayerShellQt/Window>
 #include <QApplication>
 #include <QBoxLayout>
 #include <QMessageBox>
 #include <QPushButton>
+#include <qmargins.h>
+#include <qpoint.h>
+#include <qsize.h>
 
 using namespace LayerShellQt;
 
@@ -37,12 +41,36 @@ Overlay::Overlay(QWidget *parent) : QWidget(parent) {
     show();
     hide();
 
+    throttledResize = QFunctionUtils::Throttle(
+        [this](QRect rect) {
+            this->setOverlayGeometry(rect);
+            emit this->toggleEditing();
+            emit this->toggleEditing();
+        },
+    250);
+
     connect(windowHandle(), SIGNAL(visibleChanged(bool)), systemTray, SLOT(onVisibleChange(bool)));
     connect(this,           SIGNAL(editingStarted()),    systemTray,  SLOT(onEditingStarted()));
     connect(this,           SIGNAL(editingEnded()),      systemTray,  SLOT(onEditingEnded()));
     
     systemTray->show();
     emit editingEnded();
+}
+
+void Overlay::setOverlayGeometry(QRect rect) {
+    if (auto layerShellWindow = Window::get(windowHandle())) {
+        QScreen *screen = this->screen();
+        int marginRight =
+            screen->geometry().width() - (rect.x() + rect.width());
+        int marginBottom =
+            screen->geometry().height() - (rect.y() + rect.height());
+        layerShellWindow->setMargins(
+            QMargins(rect.x(), rect.y(), marginRight, marginBottom));
+    }
+}
+
+void Overlay::onOsuGeometryChanged(QRect rect) {
+    throttledResize(rect);
 }
 
 void Overlay::setTosuUrl(QUrl url) {
