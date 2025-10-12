@@ -39,7 +39,7 @@ make -c build
 3. Run `tosu-overlay-qt --ipc-*` commands or right click the system tray icon to send commands
 
 ```sh
-Usage: ./build/tosu-overlay-qt [options]
+Usage: tosu-overlay-qt [options]
 
 Options:
   -h, --help                 Displays help on commandline options.
