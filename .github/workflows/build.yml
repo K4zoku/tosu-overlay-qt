@@ -36,12 +36,14 @@ jobs:
     steps:
       - name: Checkout 🛒
         uses: actions/checkout@v2
+      - run:|
+          sudo add-apt-repository ppa:kubuntu-ppa/backports
+          sudo apt-get update
       - name: Intall dependencies 📥
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          add-repository: ppa:kubuntu-ppa/backports
           packages: qt6-base-dev qt6-webengine-dev liblayershellqtinterface-dev
-          version: 1.0
+          version: 1.1
       - name: Build 🏗️
         run: |
           cmake -S . -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build
