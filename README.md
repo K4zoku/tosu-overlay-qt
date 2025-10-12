@@ -28,8 +28,7 @@
 ### 🏗️ Building
 
 ```sh
-cmake -B build
-make -c build
+./build.sh
 ```
 
 ### 📜 Usage
