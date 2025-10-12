@@ -31,6 +31,19 @@ workspace.windowAdded.connect(function(window) {
     }
 });
 
+workspace.windowActivated.connect(function(window) {
+    if (window.resourceName === "osu!.exe" || window.resourceName === "osu!") {
+        console.log("[Overlay] Found activated osu! window");
+        let data = {
+            event: "window-activated",
+            name: window.resourceName,
+            geometry: window.clientGeometry
+        };
+        console.log("[Overlay]", JSON.stringify(data, null, 2));
+        sendGeometry(window.clientGeometry);
+    }
+});
+
 for (let window of workspace.windowList()) {
     if (window.resourceName === "osu!.exe" || window.resourceName === "osu!") {
         console.log("[Overlay] Found osu! window");
