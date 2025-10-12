@@ -1,7 +1,7 @@
 # Tosu Overlay Linux Qt
 
 <p align="center">
-  <img src="./logo.svg" width="64" height="64">
+  <img src="./src/logo.svg" width="64" height="64">
 </p>
 
 > An overlay for osu!. Powered by Tosu, Qt 6, and Qt 6 WebEngine.
