@@ -46,8 +46,10 @@ Overlay::Overlay(QWidget *parent) : QWidget(parent) {
             this->setOverlayGeometry(rect);
             emit this->toggleEditing();
             emit this->toggleEditing();
+            // I dont know how this works but when toggle editing is called, the overlay will be resized.
+            // So I called toggleEditting twice to make sure the overlay is resized, and restore the editing state.
         },
-    250);
+    100); // Add 100ms between each resize to reduce CPU usage
 
     connect(windowHandle(), SIGNAL(visibleChanged(bool)), systemTray, SLOT(onVisibleChange(bool)));
     connect(this,           SIGNAL(editingStarted()),    systemTray,  SLOT(onEditingStarted()));
