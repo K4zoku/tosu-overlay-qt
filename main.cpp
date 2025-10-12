@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
 
     switch (options.status) {
     case CommandLineParseResult::Status::Error:
-        qWarning() << *options.error;
+        qWarning("%s\n", qPrintable(*options.error));
         return 1;
     case CommandLineParseResult::Status::IpcRequested:
         if (Ipc::send(options.command)) {
