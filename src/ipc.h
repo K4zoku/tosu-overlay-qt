@@ -14,9 +14,10 @@ enum class IpcCommand {
 class Ipc : public QObject
 {
 Q_OBJECT
+Q_CLASSINFO("D-Bus Interface", "app.tosu.Overlay.Ipc")
 public:
     bool run();
-    static bool send(IpcCommand command);
+    static bool send(const IpcCommand command);
 
 signals:
     void ipcToggleEditing();
@@ -24,7 +25,7 @@ signals:
     void ipcQuit();
 
 public slots:
-    bool call(int command);
+    bool call(const int command);
 };
 
 #endif // IPC_H

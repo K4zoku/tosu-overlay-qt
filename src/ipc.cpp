@@ -24,7 +24,7 @@ bool Ipc::run() {
     return true;
 }
 
-bool Ipc::send(IpcCommand command) {
+bool Ipc::send(const IpcCommand command) {
     auto connection = QDBusConnection::sessionBus();
     if (!connection.isConnected()) {
         qWarning("%s", qPrintable(QApplication::translate("main", "Cannot connect to D-Bus")));
@@ -48,9 +48,8 @@ bool Ipc::send(IpcCommand command) {
     return true;
 }
 
-bool Ipc::call(int command) {
-    IpcCommand ipcCommand = (IpcCommand) command;
-    switch (ipcCommand) {
+bool Ipc::call(const int command) {
+    switch ((IpcCommand) command) {
     case IpcCommand::ToggleOverlay:
         emit ipcToggleOverlay();
         break;
