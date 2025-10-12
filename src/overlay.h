@@ -12,7 +12,6 @@ class Overlay : public QWidget
 public:
     Overlay(QWidget *parent = nullptr);
     void setTosuUrl(QUrl url);
-    void showSysTray();
     void initLayerShell();
 
 signals:

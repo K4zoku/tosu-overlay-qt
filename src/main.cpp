@@ -21,13 +21,13 @@ int main(int argc, char *argv[]) {
 
     switch (options.status) {
     case CommandLineParseResult::Status::Error:
-        qWarning("%s\n", qPrintable(*options.error));
+        qWarning("%s", qPrintable(*options.error));
         return 1;
     case CommandLineParseResult::Status::IpcRequested:
         if (Ipc::send(options.command)) {
-            qInfo("%s\n", qPrintable(QApplication::translate("main", "IPC command sent")));
+            qInfo("%s", qPrintable(QApplication::translate("main", "IPC command sent")));
         } else {
-            qWarning("%s\n", qPrintable(QApplication::translate("main", "IPC command failed")));
+            qWarning("%s", qPrintable(QApplication::translate("main", "IPC command failed")));
         }
         return 0;
     case CommandLineParseResult::Status::HelpRequested:
@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
         return 0;
     case CommandLineParseResult::Status::Ok:
         if (!ipc.run()) {
-            qCritical("%s\n", qPrintable(QApplication::translate("main", "Cannot run IPC server")));
+            qCritical("%s", qPrintable(QApplication::translate("main", "Cannot run IPC server")));
             return 1;
         }
 
@@ -48,9 +48,7 @@ int main(int argc, char *argv[]) {
         QObject::connect(&ipc, SIGNAL(ipcQuit()), &overlay, SIGNAL(requestQuit()));
         overlay.setGeometry((*options.screen)->geometry());
         overlay.setTosuUrl(*options.url);
-        overlay.showSysTray();
         overlay.initLayerShell();
-        emit overlay.editingEnded();
         overlay.show();
 
         return app.exec();

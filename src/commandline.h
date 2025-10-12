@@ -20,7 +20,6 @@ struct CommandLineParseResult
     IpcCommand command = IpcCommand::None;
     Status status = Status::Ok;
     std::optional<QString> error = std::nullopt;
-    std::optional<QString> message = std::nullopt;
     std::optional<QScreen*> screen = std::nullopt;
     std::optional<QUrl> url = std::nullopt;
 };

@@ -70,11 +70,9 @@ bool CommandLineParser::parseIpcOption(CommandLineParseResult *result) {
 
 static inline QString availableMonitorMessage(QList<QScreen*> screens) {
     QString result = QApplication::translate("main", "Available monitors: (%1)").arg(screens.size());
-    result.append("\n");
     for (int i = 0; i < screens.size(); ++i) {
-        result.append("  "); // indent
+        result.append("\n  ");
         result.append(QApplication::translate("main", "Monitor %1: %2").arg(QString::number(i), screens[i]->name()));
-        result.append("\n");
     }
     return result;
 }

@@ -10,15 +10,15 @@
 bool Ipc::run() {
     auto connection = QDBusConnection::sessionBus();
     if (!connection.isConnected()) {
-        qWarning("%s\n", qPrintable(tr("Cannot connect to D-Bus")));
+        qWarning("%s", qPrintable(tr("Cannot connect to D-Bus")));
         return false;
     }
     if (!connection.registerService(SERVICE_NAME)) {
-        qWarning("%s\n", qPrintable(connection.lastError().message()));
+        qWarning("%s", qPrintable(connection.lastError().message()));
         return false;
     }
     if (!connection.registerObject("/", this, QDBusConnection::ExportAllSlots)) {
-        qWarning("%s\n", qPrintable(tr("Cannot register object")));
+        qWarning("%s", qPrintable(tr("Cannot register object")));
         return false;
     }
     return true;
@@ -27,7 +27,7 @@ bool Ipc::run() {
 bool Ipc::send(IpcCommand command) {
     auto connection = QDBusConnection::sessionBus();
     if (!connection.isConnected()) {
-        qWarning("%s\n", qPrintable(QApplication::translate("main", "Cannot connect to D-Bus")));
+        qWarning("%s", qPrintable(QApplication::translate("main", "Cannot connect to D-Bus")));
         return false;
     }
     QDBusInterface iface(SERVICE_NAME, "/");
@@ -36,13 +36,13 @@ bool Ipc::send(IpcCommand command) {
         if (reply.isValid()) {
             bool value = reply.value();
             if (value) {
-                qInfo("%s\n", qPrintable(QApplication::translate("main", "IPC command executed")));
+                qInfo("%s", qPrintable(QApplication::translate("main", "IPC command executed")));
             } else {
-                qWarning("%s\n", qPrintable(QApplication::translate("main", "IPC command execute failed")));
+                qWarning("%s", qPrintable(QApplication::translate("main", "IPC command execute failed")));
             }
             return value;
         }
-        qWarning("%s %s\n", qPrintable(QApplication::translate("main", "D-Bus call failed")), qPrintable(reply.error().message()));
+        qWarning("%s\n%s", qPrintable(QApplication::translate("main", "D-Bus call failed")), qPrintable(reply.error().message()));
         return false;
     }
     return true;

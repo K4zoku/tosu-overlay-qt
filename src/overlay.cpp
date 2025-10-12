@@ -36,13 +36,13 @@ Overlay::Overlay(QWidget *parent) : QWidget(parent) {
 
     show();
     hide();
-    connect(windowHandle(), SIGNAL(visibleChanged(bool)), systemTray, SLOT(onVisibleChange(bool)));
-    connect(this,           SIGNAL(editingStarted()),    systemTray, SLOT(onEditingStarted()));
-    connect(this,           SIGNAL(editingEnded()),      systemTray, SLOT(onEditingEnded()));
-}
 
-void Overlay::showSysTray() {
-    this->systemTray->show();
+    connect(windowHandle(), SIGNAL(visibleChanged(bool)), systemTray, SLOT(onVisibleChange(bool)));
+    connect(this,           SIGNAL(editingStarted()),    systemTray,  SLOT(onEditingStarted()));
+    connect(this,           SIGNAL(editingEnded()),      systemTray,  SLOT(onEditingEnded()));
+    
+    systemTray->show();
+    emit editingEnded();
 }
 
 void Overlay::setTosuUrl(QUrl url) {
