@@ -22,9 +22,9 @@ find_package(LayerShellQt REQUIRED)
 set(PROJECT_SOURCES main.cpp
     resources.qrc
     overlay.h overlay.cpp
-    tosuwebview.h tosuwebview.cpp
+    webview.h webview.cpp
     systemtray.h systemtray.cpp
-    cli.h cli.cpp
+    commandline.h commandline.cpp
     ipc.h ipc.cpp
 )
 

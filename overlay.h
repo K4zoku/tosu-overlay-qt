@@ -2,7 +2,7 @@
 #define OVERLAY_H
 
 #include "systemtray.h"
-#include "tosuwebview.h"
+#include "webview.h"
 
 #include <QWidget>
 
@@ -23,7 +23,6 @@ signals:
     void toggleVisibility();
 
 private slots:
-    void onLoaded(bool ok);
     void onEditingStarted();
     void onEditingEnded();
     void onEditingToggled();
@@ -31,9 +30,9 @@ private slots:
     void onQuitRequested();
 
 private:
-    bool mEditing = false;
-    TosuWebView *mTosuWebView = nullptr;
-    SystemTray *mSystemTray = nullptr;
+    bool editing = false;
+    WebView *webView = nullptr;
+    SystemTray *systemTray = nullptr;
 };
 
 #endif // OVERLAY_H

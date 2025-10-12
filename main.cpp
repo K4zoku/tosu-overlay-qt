@@ -1,4 +1,4 @@
-#include "cli.h"
+#include "commandline.h"
 #include "overlay.h"
 #include "version.h"
 
@@ -13,25 +13,21 @@ int main(int argc, char *argv[]) {
     QApplication::setApplicationDisplayName("Tosu Overlay QT");
     QApplication::setApplicationVersion(APPLICATION_VERSION);
 
-    CLI parser;
-    IPC ipc;
+    CommandLineParser parser;
+    Ipc ipc;
 
     parser.parse(QApplication::arguments());
     auto options = parser.parseCommandLine();
 
-    switch (options.statusCode) {
+    switch (options.status) {
     case CommandLineParseResult::Status::Error:
-        qWarning() << *options.errorString;
+        qWarning() << *options.error;
         return 1;
     case CommandLineParseResult::Status::IpcRequested:
-        if (!QDBusConnection::sessionBus().isConnected()) {
-            qWarning() << QApplication::translate("main", "Cannot connect to the D-Bus session bus.");
-            return 1;
-        }
-        if (ipc.send(options.ipcCommand)) {
-            qInfo() << QApplication::translate("main", "IPC command sent");
+        if (Ipc::send(options.command)) {
+            qInfo("%s\n", qPrintable(QApplication::translate("main", "IPC command sent")));
         } else {
-            qWarning() << QApplication::translate("main", "IPC command failed");
+            qWarning("%s\n", qPrintable(QApplication::translate("main", "IPC command failed")));
         }
         return 0;
     case CommandLineParseResult::Status::HelpRequested:
@@ -41,12 +37,8 @@ int main(int argc, char *argv[]) {
         parser.showVersion();
         return 0;
     case CommandLineParseResult::Status::Ok:
-        if (!QDBusConnection::sessionBus().isConnected()) {
-            qWarning() << QApplication::translate("main", "Cannot connect to the D-Bus session bus.");
-            return 1;
-        }
-        if (!ipc.registerService()) {
-            qCritical() << QApplication::translate("main", "Register IPC failed");
+        if (!ipc.run()) {
+            qCritical("%s\n", qPrintable(QApplication::translate("main", "Cannot run IPC server")));
             return 1;
         }
 
@@ -55,7 +47,7 @@ int main(int argc, char *argv[]) {
         QObject::connect(&ipc, SIGNAL(ipcToggleEditing()), &overlay, SIGNAL(toggleEditing()));
         QObject::connect(&ipc, SIGNAL(ipcQuit()), &overlay, SIGNAL(requestQuit()));
         overlay.setGeometry((*options.screen)->geometry());
-        overlay.setTosuUrl(*options.tosuBaseUrl);
+        overlay.setTosuUrl(*options.url);
         overlay.showSysTray();
         overlay.initLayerShell();
         emit overlay.editingEnded();

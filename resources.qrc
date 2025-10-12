@@ -1,5 +1,10 @@
 <RCC>
-    <qresource prefix="/images">
+    <qresource prefix="/">
+        <file>icons/edit.svg</file>
+        <file>icons/eye-off.svg</file>
+        <file>icons/eye.svg</file>
+        <file>icons/log-out.svg</file>
+        <file>icons/save.svg</file>
         <file>logo.svg</file>
     </qresource>
 </RCC>

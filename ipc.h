@@ -11,15 +11,12 @@ enum class IpcCommand {
   QuitOverlay
 };
 
-class IPC : public QObject
+class Ipc : public QObject
 {
 Q_OBJECT
 public:
-
-    IPC();
-    bool connect();
-    bool registerService();
-    bool send(IpcCommand command);
+    bool run();
+    static bool send(IpcCommand command);
 
 signals:
     void ipcToggleEditing();

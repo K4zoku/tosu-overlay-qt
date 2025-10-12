@@ -1,28 +1,51 @@
 #include "systemtray.h"
 
-#include <QAction>
-#include <QMenu>
-#include <QDebug>
-
 SystemTray::SystemTray(QObject *parent)
     : QSystemTrayIcon{parent}
 {
-    QIcon icon = QIcon(QPixmap(":/images/logo.svg"));
-    this->setIcon(icon);
+    QIcon icon = QIcon(QPixmap(":/logo.svg"));
+    setIcon(icon);
     connect(this, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(onActivated(QSystemTrayIcon::ActivationReason)));
-    QAction *toggleVisibilityAction = new QAction(tr("Hide/Show overlay"), this);
-    connect(toggleVisibilityAction, SIGNAL(triggered()), this, SIGNAL(toggleVisibility()));
-    QAction *toggleEditAction = new QAction(tr("Toggle overlay editing"), this);
-    connect(toggleEditAction, SIGNAL(triggered()), this, SIGNAL(toggleEditing()));
-    QAction *quitAction = new QAction(tr("Quit"), this);
-    connect(quitAction, SIGNAL(triggered()), this, SIGNAL(requestQuit()));
 
-    QMenu *menu = new QMenu();
-    menu->addAction(toggleVisibilityAction);
-    menu->addAction(toggleEditAction);
+    actionShowHide = new QAction(tr("Hide/Show overlay"), this);
+    actionEdit = new QAction(tr("Toggle overlay editing"), this);
+    actionQuit = new QAction(tr("Quit"), this);
+    actionQuit->setIcon(QIcon(QPixmap(":/icons/log-out.svg")));
+
+    connect(actionShowHide, SIGNAL(triggered()), this, SIGNAL(toggleVisibility()));
+    connect(actionEdit,     SIGNAL(triggered()), this, SIGNAL(toggleEditing()));
+    connect(actionQuit,     SIGNAL(triggered()), this, SIGNAL(requestQuit()));
+
+    menu = new QMenu();
+    menu->addAction(actionShowHide);
+    menu->addAction(actionEdit);
     menu->addSeparator();
-    menu->addAction(quitAction);
+    menu->addAction(actionQuit);
     this->setContextMenu(menu);
+}
+
+void SystemTray::onVisibleChange(bool visible) {
+    if (visible) {
+        actionShowHide->setText(tr("Hide overlay"));
+        QIcon icon = QIcon(QPixmap(":/icons/eye-off.svg"));
+        actionShowHide->setIcon(icon);
+    } else {
+        actionShowHide->setText(tr("Show overlay"));
+        QIcon icon = QIcon(QPixmap(":/icons/eye.svg"));
+        actionShowHide->setIcon(icon);
+    }
+}
+
+void SystemTray::onEditingStarted() {
+    actionEdit->setText(tr("Disable editing"));
+    QIcon icon = QIcon(QPixmap(":/icons/save.svg"));
+    actionEdit->setIcon(icon);
+}
+
+void SystemTray::onEditingEnded() {
+    actionEdit->setText("Enable editing");
+    QIcon icon = QIcon(QPixmap(":/icons/edit.svg"));
+    actionEdit->setIcon(icon);
 }
 
 void SystemTray::onActivated(QSystemTrayIcon::ActivationReason reason) {

@@ -1,18 +1,18 @@
-#ifndef TOSUWEBVIEW_H
-#define TOSUWEBVIEW_H
+#ifndef WEBVIEW_H
+#define WEBVIEW_H
 
 #include <QWebEngineView>
 
-#define TOSU_DEFAULT_BASE_URL "https://127.0.0.1:24050"
+static const QUrl TOSU_DEFAULT_BASE_URL = QUrl(QString("https://127.0.0.1:24050"));
 
-class TosuWebView : public QWebEngineView
+class WebView : public QWebEngineView
 {
 Q_OBJECT
 
 public:
-    TosuWebView(QWidget *parent = nullptr, const QUrl &baseUrl = QUrl(QString(TOSU_DEFAULT_BASE_URL)));
-    ~TosuWebView();
-    void setTosuBaseUrl(const QUrl &baseUrl);
+    WebView(QWidget *parent = nullptr, const QUrl baseUrl = TOSU_DEFAULT_BASE_URL);
+    ~WebView();
+    void setTosuBaseUrl(const QUrl baseUrl);
 
 signals:
     void editingEnd();
@@ -20,11 +20,20 @@ signals:
 public slots:
     void onEditingStarted();
     void onEditingEnded();
-    void loaded(bool ok);
+    void onLoaded(bool ok);
     void onKeyDown(QString key);
 
 private:
-    QUrl m_baseUrl;
+    QUrl baseUrl;
+};
+
+class WebPage : public QWebEnginePage
+{
+    Q_OBJECT
+public:
+    WebPage(WebView *parent = nullptr);
+
+private:
     void javaScriptConsoleMessage(QWebEnginePage::JavaScriptConsoleMessageLevel level, const QString &message, int lineNumber, const QString &sourceID);
 };
 
@@ -41,4 +50,4 @@ signals:
     void keyDown(QString key);
 };
 
-#endif // TOSUWEBVIEW_H
+#endif // WEBVIEW_H

@@ -6,13 +6,15 @@
 #include <QMessageBox>
 #include <QPushButton>
 
+using namespace LayerShellQt;
+
 Overlay::Overlay(QWidget *parent) : QWidget(parent) {
-    this->setAttribute(Qt::WA_TranslucentBackground, true);
-    this->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+    setAttribute(Qt::WA_TranslucentBackground, true);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
 
     auto *layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
-    this->setLayout(layout);
+    setLayout(layout);
 
     connect(this, SIGNAL(toggleEditing()),    this, SLOT(onEditingToggled()));
     connect(this, SIGNAL(editingStarted()),   this, SLOT(onEditingStarted()));
@@ -20,58 +22,43 @@ Overlay::Overlay(QWidget *parent) : QWidget(parent) {
     connect(this, SIGNAL(toggleVisibility()), this, SLOT(onVisibilityToggled()));
     connect(this, SIGNAL(requestQuit()),      this, SLOT(onQuitRequested()));
 
-    this->mTosuWebView = new TosuWebView(this);
-    connect(this->mTosuWebView, SIGNAL(loadFinished(bool)), this, SLOT(onLoaded(bool)));
-    connect(this->mTosuWebView, SIGNAL(editingEnd()),       this, SIGNAL(editingEnded()));
-    connect(this, SIGNAL(editingStarted()), this->mTosuWebView, SLOT(onEditingStarted()));
-    connect(this, SIGNAL(editingEnded()),   this->mTosuWebView, SLOT(onEditingEnded()));
+    webView = new WebView(this);
+    connect(webView, SIGNAL(editingEnd()),       this,    SIGNAL(editingEnded()));
+    connect(this,    SIGNAL(editingStarted()),   webView, SLOT(onEditingStarted()));
+    connect(this,    SIGNAL(editingEnded()),     webView, SLOT(onEditingEnded()));
 
-    layout->addWidget(this->mTosuWebView);
+    layout->addWidget(this->webView);
 
-    this->mSystemTray = new SystemTray(this);
-    connect(this->mSystemTray, SIGNAL(toggleEditing()),    this, SIGNAL(toggleEditing()));
-    connect(this->mSystemTray, SIGNAL(toggleVisibility()), this, SIGNAL(toggleVisibility()));
-    connect(this->mSystemTray, SIGNAL(requestQuit()),      this, SIGNAL(requestQuit()));
+    systemTray = new SystemTray(this);
+    connect(systemTray, SIGNAL(toggleEditing()),    this, SIGNAL(toggleEditing()));
+    connect(systemTray, SIGNAL(toggleVisibility()), this, SIGNAL(toggleVisibility()));
+    connect(systemTray, SIGNAL(requestQuit()),      this, SIGNAL(requestQuit()));
 
-    this->show();
-    this->hide();
+    show();
+    hide();
+    connect(windowHandle(), SIGNAL(visibleChanged(bool)), systemTray, SLOT(onVisibleChange(bool)));
+    connect(this,           SIGNAL(editingStarted()),    systemTray, SLOT(onEditingStarted()));
+    connect(this,           SIGNAL(editingEnded()),      systemTray, SLOT(onEditingEnded()));
 }
 
 void Overlay::showSysTray() {
-    this->mSystemTray->show();
+    this->systemTray->show();
 }
 
 void Overlay::setTosuUrl(QUrl url) {
-    this->mTosuWebView->setTosuBaseUrl(url);
+    this->webView->setTosuBaseUrl(url);
 }
 
 void Overlay::initLayerShell() {
-    if (auto layerShellWindow = LayerShellQt::Window::get(this->windowHandle())) {
+    if (auto layerShellWindow = Window::get(windowHandle())) {
         layerShellWindow->setExclusiveZone(-1);
         layerShellWindow->setScope("tosu-overlay");
-        layerShellWindow->setLayer(LayerShellQt::Window::LayerOverlay);
-        layerShellWindow->setKeyboardInteractivity(LayerShellQt::Window::KeyboardInteractivityNone);
-    }
-}
-
-void Overlay::onLoaded(bool ok) {
-    if (ok) return;
-    QMessageBox msgBox;
-    msgBox.setText(tr("Error connecting with tosu, is it running?"));
-    QPushButton *yes = msgBox.addButton(tr("Yes, reload the overlay"), QMessageBox::YesRole);
-    QPushButton *no = msgBox.addButton(tr("No, close the overlay"), QMessageBox::NoRole);
-    msgBox.setDefaultButton(yes);
-    msgBox.setEscapeButton(no);
-    msgBox.exec();
-    if (msgBox.clickedButton() == yes) {
-        this->mTosuWebView->reload();
-    } else {
-        emit requestQuit();
+        layerShellWindow->setLayer(Window::LayerOverlay);
     }
 }
 
 void Overlay::onEditingToggled() {
-    if (this->mEditing) {
+    if (editing) {
         emit editingEnded();
     } else {
         emit editingStarted();
@@ -79,31 +66,24 @@ void Overlay::onEditingToggled() {
 }
 
 void Overlay::onEditingStarted() {
-    this->mEditing = true;
-    QWindow *window = this->windowHandle();
-    QRegion mask = QRegion();
-    window->setMask(mask);
-    if (auto layerShellWindow = LayerShellQt::Window::get(window)) {
-        layerShellWindow->setKeyboardInteractivity(LayerShellQt::Window::KeyboardInteractivityExclusive);
+    if (!isVisible()) show();
+    editing = true;
+    setMask(QRegion());
+    if (auto layerShellWindow = Window::get(windowHandle())) {
+        layerShellWindow->setKeyboardInteractivity(Window::KeyboardInteractivityExclusive);
     }
 }
 
 void Overlay::onEditingEnded() {
-    this->mEditing = false;
-    QWindow *window = this->windowHandle();
-    QRegion mask = QRegion(window->geometry());
-    window->setMask(mask);
-    if (auto layerShellWindow = LayerShellQt::Window::get(window)) {
-        layerShellWindow->setKeyboardInteractivity(LayerShellQt::Window::KeyboardInteractivityNone);
+    editing = false;
+    setMask(QRegion(geometry()));
+    if (auto layerShellWindow = Window::get(windowHandle())) {
+        layerShellWindow->setKeyboardInteractivity(Window::KeyboardInteractivityNone);
     }
 }
 
 void Overlay::onVisibilityToggled() {
-    if (this->isVisible()) {
-        this->hide();
-    } else {
-        this->show();
-    }
+    setVisible(!isVisible());
 }
 
 void Overlay::onQuitRequested() {

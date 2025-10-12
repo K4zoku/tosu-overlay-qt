@@ -1,53 +1,54 @@
 #include "ipc.h"
 
+#include <QApplication>
 #include <QDBusConnection>
 #include <QDBusInterface>
 #include <QDBusReply>
 
 #define SERVICE_NAME "app.tosu.Overlay"
 
-IPC::IPC() {}
-
-bool IPC::connect() {
+bool Ipc::run() {
     auto connection = QDBusConnection::sessionBus();
     if (!connection.isConnected()) {
-        qWarning("Cannot connect to the D-Bus session bus.\n"
-                 "To start it, run:\n"
-                 "\teval `dbus-launch --auto-syntax`\n");
+        qWarning("%s\n", qPrintable(tr("Cannot connect to D-Bus")));
         return false;
     }
-
-    return true;
-}
-
-bool IPC::registerService() {
-    auto connection = QDBusConnection::sessionBus();
     if (!connection.registerService(SERVICE_NAME)) {
         qWarning("%s\n", qPrintable(connection.lastError().message()));
         return false;
     }
-    connection.registerObject("/", this, QDBusConnection::ExportAllSlots);
-    return true;
-}
-
-bool IPC::send(IpcCommand command) {
-    QDBusInterface iface(SERVICE_NAME, "/");
-    if (iface.isValid()) {
-        QDBusReply<int> reply = iface.call("call", (int)command);
-        if (reply.isValid()) {
-            bool value = reply.value();
-            if (value) {
-                qWarning("IPC command execute failed");
-            }
-            return value;
-        }
-        qWarning("Call failed: %s\n", qPrintable(reply.error().message()));
+    if (!connection.registerObject("/", this, QDBusConnection::ExportAllSlots)) {
+        qWarning("%s\n", qPrintable(tr("Cannot register object")));
         return false;
     }
     return true;
 }
 
-bool IPC::call(int command) {
+bool Ipc::send(IpcCommand command) {
+    auto connection = QDBusConnection::sessionBus();
+    if (!connection.isConnected()) {
+        qWarning("%s\n", qPrintable(QApplication::translate("main", "Cannot connect to D-Bus")));
+        return false;
+    }
+    QDBusInterface iface(SERVICE_NAME, "/");
+    if (iface.isValid()) {
+        QDBusReply<bool> reply = iface.call("call", (int)command);
+        if (reply.isValid()) {
+            bool value = reply.value();
+            if (value) {
+                qInfo("%s\n", qPrintable(QApplication::translate("main", "IPC command executed")));
+            } else {
+                qWarning("%s\n", qPrintable(QApplication::translate("main", "IPC command execute failed")));
+            }
+            return value;
+        }
+        qWarning("%s %s\n", qPrintable(QApplication::translate("main", "D-Bus call failed")), qPrintable(reply.error().message()));
+        return false;
+    }
+    return true;
+}
+
+bool Ipc::call(int command) {
     IpcCommand ipcCommand = (IpcCommand) command;
     switch (ipcCommand) {
     case IpcCommand::ToggleOverlay:
