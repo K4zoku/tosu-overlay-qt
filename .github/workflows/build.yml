@@ -36,7 +36,8 @@ jobs:
     steps:
       - name: Checkout 🛒
         uses: actions/checkout@v2
-      - run:|
+      - name: Add repository 🗄️
+        run: |
           sudo add-apt-repository ppa:kubuntu-ppa/backports
           sudo apt-get update
       - name: Intall dependencies 📥
