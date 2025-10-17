@@ -1,7 +1,6 @@
 #include "commandline.h"
 #include <QApplication>
 #include <QUrl>
-#include <qapplication.h>
 
 CommandLineParser::CommandLineParser() : QCommandLineParser(),
     optionUrl(

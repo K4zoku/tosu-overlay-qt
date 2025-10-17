@@ -4,8 +4,6 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QWebChannel>
-#include <QMessageBox>
-#include <QDebug>
 
 WebView::WebView(QWidget *parent, const QUrl baseUrl) : QWebEngineView{parent} {
     this->setPage(new WebPage(this));

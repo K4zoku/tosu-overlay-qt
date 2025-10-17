@@ -3,11 +3,12 @@
 
 #include "ipc.h"
 
+#include <optional>
+
+#include <QCommandLineOption>
 #include <QCommandLineParser>
 #include <QScreen>
 #include <QUrl>
-#include <optional>
-#include <qcommandlineoption.h>
 
 struct CommandLineParseResult
 {

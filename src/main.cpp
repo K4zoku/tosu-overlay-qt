@@ -4,7 +4,6 @@
 
 #include <QApplication>
 #include <LayerShellQt/Shell>
-#include <QDebug>
 
 int main(int argc, char *argv[]) {
     LayerShellQt::Shell::useLayerShell();
