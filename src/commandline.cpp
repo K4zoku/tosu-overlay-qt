@@ -17,7 +17,7 @@ CommandLineParser::CommandLineParser() : QCommandLineParser(),
     optionAttach(
         QStringList() << "a" << "attach", 
         QApplication::translate("main", 
-            "Attach overlay to osu! window, require external script to send geometry."
+            "Attach overlay to osu! window, require external script to send geometry. "
             "Using this option will ignore --monitor option"
         )
     ),
@@ -26,7 +26,7 @@ CommandLineParser::CommandLineParser() : QCommandLineParser(),
         QApplication::translate("main", "Send 'toggle-edit' command to the running overlay")
     ),
     optionIpcToggleOverlay(
-        QStringList() << "H" << "ipc-toggle-overlay",
+        QStringList() << "i" << "ipc-toggle-overlay",
         QApplication::translate("main", "Send 'toggle-visible' command to the running overlay")
     ),
     optionQuit(
