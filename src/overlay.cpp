@@ -1,14 +1,11 @@
 #include "overlay.h"
-#include "qfunctionutils.h"
 
 #include <LayerShellQt/Window>
 #include <QApplication>
 #include <QBoxLayout>
 #include <QMessageBox>
 #include <QPushButton>
-#include <qmargins.h>
-#include <qpoint.h>
-#include <qsize.h>
+#include <QRegion>
 
 using namespace LayerShellQt;
 
@@ -41,19 +38,9 @@ Overlay::Overlay(QWidget *parent) : QWidget(parent) {
     show();
     hide();
 
-    throttledResize = QFunctionUtils::Throttle(
-        [this](QRect rect) {
-            this->setOverlayGeometry(rect);
-            emit this->toggleEditing();
-            emit this->toggleEditing();
-            // I dont know how this works but when toggle editing is called, the overlay will be resized.
-            // So I called toggleEditting twice to make sure the overlay is resized, and restore the editing state.
-        },
-    100); // Add 100ms between each resize to reduce CPU usage
-
     connect(windowHandle(), SIGNAL(visibleChanged(bool)), systemTray, SLOT(onVisibleChange(bool)));
-    connect(this,           SIGNAL(editingStarted()),    systemTray,  SLOT(onEditingStarted()));
-    connect(this,           SIGNAL(editingEnded()),      systemTray,  SLOT(onEditingEnded()));
+    connect(this,           SIGNAL(editingStarted()),     systemTray, SLOT(onEditingStarted()));
+    connect(this,           SIGNAL(editingEnded()),       systemTray, SLOT(onEditingEnded()));
     
     systemTray->show();
     emit editingEnded();
@@ -69,14 +56,16 @@ void Overlay::setOverlayGeometry(QRect rect) {
         layerShellWindow->setMargins(
             QMargins(rect.x(), rect.y(), marginRight, marginBottom));
     }
+    setGeometry(rect);
+    update();
 }
 
 void Overlay::onOsuGeometryChanged(QRect rect) {
-    throttledResize(rect);
+    setOverlayGeometry(rect);
 }
 
 void Overlay::setTosuUrl(QUrl url) {
-    this->webView->setTosuBaseUrl(url);
+    webView->setTosuBaseUrl(url);
 }
 
 void Overlay::initLayerShell() {
@@ -97,18 +86,19 @@ void Overlay::onEditingToggled() {
 }
 
 void Overlay::onEditingStarted() {
-    if (!isVisible()) show();
     editing = true;
-    setMask(QRegion());
-    if (auto layerShellWindow = Window::get(windowHandle())) {
+    auto window = windowHandle();
+    window->setMask(QRegion());
+    if (auto layerShellWindow = Window::get(window)) {
         layerShellWindow->setKeyboardInteractivity(Window::KeyboardInteractivityExclusive);
     }
 }
 
 void Overlay::onEditingEnded() {
     editing = false;
-    setMask(QRegion(geometry()));
-    if (auto layerShellWindow = Window::get(windowHandle())) {
+    auto window = windowHandle();
+    window->setMask(QRegion(-1, -1, 1, 1));
+    if (auto layerShellWindow = Window::get(window)) {
         layerShellWindow->setKeyboardInteractivity(Window::KeyboardInteractivityNone);
     }
 }

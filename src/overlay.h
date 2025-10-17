@@ -37,7 +37,6 @@ private:
     bool editing = false;
     WebView *webView = nullptr;
     SystemTray *systemTray = nullptr;
-    std::function<void(QRect)> throttledResize = nullptr;
 };
 
 #endif // OVERLAY_H
