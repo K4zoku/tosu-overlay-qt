@@ -1,52 +1,43 @@
+let cachedGeometry = { x: 0, y: 0, width: 0, height: 0 };
+
 function sendGeometry(geometry) {
+    if (isGeometryEqual(geometry, cachedGeometry)) {
+        return;
+    }
+    cachedGeometry = geometry;
     callDBus("app.tosu.Overlay", "/", "app.tosu.Overlay.Ipc", "geometryChanged",
         geometry.x, geometry.y, geometry.width, geometry.height);
 }
 
-function connectWindowGeometryChanged(window) {
-    sendGeometry(window.clientGeometry);
-
-    window.clientGeometryChanged.connect(function(oldGeometry) {
-        let data = {
-            event: "geometry-changed",
-            name: window.resourceName,
-            geometry: window.clientGeometry,
-            oldGeometry: oldGeometry
-        };
-        console.log("[Overlay]", JSON.stringify(data, null, 2));
-        sendGeometry(window.clientGeometry);
-    });
+function isGeometryEqual(geometry1, geometry2) {
+    return geometry1.x === geometry2.x &&
+        geometry1.y === geometry2.y &&
+        geometry1.width === geometry2.width &&
+        geometry1.height === geometry2.height;
 }
 
+function isOsuWindow(window) {
+    return window.resourceName === "osu!.exe" || window.resourceName === "osu!";
+}
+
+// Scan for currently opened osu window
+for (let window of workspace.windowList()) {
+    if (isOsuWindow()) {
+        sendGeometry(window.clientGeometry);
+        window.clientGeometryChanged.connect(() => sendGeometry(window.clientGeometry));
+    }
+}
+
+// Connect event for new osu window added
 workspace.windowAdded.connect(function(window) {
-    if (window.resourceName === "osu!.exe" || window.resourceName === "osu!") {
-        console.log("[Overlay] Found newly added osu! window");
-        let data = {
-            event: "window-added",
-            name: window.resourceName,
-            geometry: window.clientGeometry
-        };
-        console.log("[Overlay]", JSON.stringify(data, null, 2));
-        connectWindowGeometryChanged(window);
+    if (isOsuWindow(window)) {
+        sendGeometry(window.clientGeometry);
+        window.clientGeometryChanged.connect(() => sendGeometry(window.clientGeometry));
     }
 });
 
 workspace.windowActivated.connect(function(window) {
-    if (window.resourceName === "osu!.exe" || window.resourceName === "osu!") {
-        console.log("[Overlay] Found activated osu! window");
-        let data = {
-            event: "window-activated",
-            name: window.resourceName,
-            geometry: window.clientGeometry
-        };
-        console.log("[Overlay]", JSON.stringify(data, null, 2));
+    if (isOsuWindow(window)) {
         sendGeometry(window.clientGeometry);
     }
 });
-
-for (let window of workspace.windowList()) {
-    if (window.resourceName === "osu!.exe" || window.resourceName === "osu!") {
-        console.log("[Overlay] Found osu! window");
-        connectWindowGeometryChanged(window);
-    }
-}
