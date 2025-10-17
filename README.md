@@ -12,9 +12,10 @@
 - [x] Transparent window.
 - [x] Clickthrough window.
 - [x] Overlay edit mode.
-- [x] Global hotkey.
+  - [x] Press Esc to exit editing.
+- [x] Global hotkey support. (need manual configuration per compositor/DE)
 - [x] Wayland support.
-- [x] X11 support(?).
+- [ ] X11 support. (not tested yet)
 - [x] Multi-monitor.
 - [x] System tray.
 - [x] Attach overlay to osu! window (Currently supported KDE by kwin script in [supports/kwin-script](supports/kwin-script). You can use external script to send osu window geometry via D-Bus, contributions are welcome).
