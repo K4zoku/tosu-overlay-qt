@@ -1,0 +1,21 @@
+[Desktop Entry]
+Icon=tosu-overlay
+Name=Tosu Overlay
+Comment=Overlay for osu! Powered by tosu, qt6 and qt6 webengine
+Exec=/usr/bin/tosu-overlay
+NoDisplay=false
+PrefersNonDefaultGPU=false
+StartupNotify=false
+Terminal=false
+Type=Application
+Categories=Game;Ultilities
+Actions=toggle-edit;toggle-visibility
+
+[Desktop Action toggle-edit]
+Exec=/usr/bin/tosu-overlay -e
+Name=Toggle overlay editing
+X-KDE-Shortcuts=Alt+Ctrl+Space
+
+[Desktop Action toggle-visibility]
+Exec=/usr/bin/tosu-overlay -i
+Name=Toggle overlay visibility
