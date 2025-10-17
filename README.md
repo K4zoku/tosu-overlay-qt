@@ -17,7 +17,7 @@
 - [x] X11 support(?).
 - [x] Multi-monitor.
 - [x] System tray.
-- [x] Attach overlay to osu! window (Currently supported KDE by kwin script in [supports/tosu-overlay-kwin-script](supports/tosu-overlay-kwin-script). You can use external script to send geometry via D-Bus, contribution is welcome).
+- [x] Attach overlay to osu! window (Currently supported KDE by kwin script in [supports/kwin-script](supports/kwin-script). You can use external script to send osu window geometry via D-Bus, contributions are welcome).
 
 ## 📚 Dependencies
 
