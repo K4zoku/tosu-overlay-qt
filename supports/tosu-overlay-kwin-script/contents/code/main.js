@@ -16,8 +16,13 @@ function isGeometryEqual(geometry1, geometry2) {
         geometry1.height === geometry2.height;
 }
 
+const osuResourceNames = [
+    "osu!", // osu!lazer
+    "osu!.exe", // osu!stable
+];
+
 function isOsuWindow(window) {
-    return window.resourceName === "osu!.exe" || window.resourceName === "osu!";
+    return osuResourceNames.includes(window.resourceName());
 }
 
 // Scan for currently opened osu window
