@@ -23,6 +23,7 @@ build() {
     cd "${srcdir}/${_pkgbase}"
     ./build.sh
 }
+
 package() {
     cd "${srcdir}/${_pkgbase}"
     install -Dm755 "build/${_pkgbase}" "${pkgdir}/usr/bin/${_pkgbase}"
