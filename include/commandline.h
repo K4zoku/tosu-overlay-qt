@@ -2,7 +2,6 @@
 #define COMMANDLINE_H
 
 #include "ipc.h"
-#include "qtmetamacros.h"
 
 #include <optional>
 
