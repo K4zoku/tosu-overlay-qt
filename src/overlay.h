@@ -14,6 +14,7 @@ public:
     Overlay(QWidget *parent = nullptr);
     void setTosuUrl(QUrl url);
     void initLayerShell();
+    void setOverlayGeometry(QRect rect);
 
 signals:
     void toggleEditing();
@@ -21,7 +22,7 @@ signals:
     void editingEnded();
     void requestQuit();
     void toggleVisibility();
-
+    
 public slots:
     void onOsuGeometryChanged(QRect rect);
 
@@ -33,7 +34,6 @@ private slots:
     void onQuitRequested();
 
 private:
-    void setOverlayGeometry(QRect rect);
     bool editing = false;
     WebView *webView = nullptr;
     SystemTray *systemTray = nullptr;
