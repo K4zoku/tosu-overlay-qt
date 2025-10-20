@@ -28,6 +28,9 @@ signals:
 
 public slots:
     bool call(const int command);
+    void toggleEditing();
+    void toggleOverlay();
+    void quitOverlay();
     void geometryChanged(const int x, const int y, const int width, const int height);
 };
 

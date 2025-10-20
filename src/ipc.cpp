@@ -65,6 +65,18 @@ bool Ipc::call(const int command) {
     return true;
 }
 
+void Ipc::toggleEditing() {
+    emit ipcToggleEditing();
+}
+
+void Ipc::toggleOverlay() {
+    emit ipcToggleOverlay();
+}
+
+void Ipc::quitOverlay() {
+    emit ipcQuit();
+}
+
 void Ipc::geometryChanged(const int x, const int y, const int width, const int height) {
     emit ipcGeometryChanged(QRect(x, y, width, height));
 }

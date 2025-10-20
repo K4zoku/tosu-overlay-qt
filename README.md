@@ -72,5 +72,11 @@ Options:
     - `1`: toggle-edit, 
     - `2`: toggle-visible, 
     - `3`: quit
+- `toggleEditing() -> void`
+  - Details: Method to toggle editing, equivalent to `call(1)`
+- `toggleOverlay() -> void`
+  - Details: Method to toggle overlay, equivalent to `call(2)`
+- `quitOverlay() -> void`
+  - Details: Method to quit overlay, equivalent to `call(3)`
 - `geometryChanged(int x, int y, int width, int height) -> void`
   - Details: Signal to notify geometry change, used to attach overlay to osu! window by external script

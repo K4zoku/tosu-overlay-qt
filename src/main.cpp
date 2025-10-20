@@ -9,7 +9,7 @@ int main(int argc, char *argv[]) {
     LayerShellQt::Shell::useLayerShell();
     QApplication app(argc, argv);
     QApplication::setApplicationName(APPLICATION_NAME);
-    QApplication::setApplicationDisplayName("Tosu Overlay QT");
+    QApplication::setApplicationDisplayName("Tosu Overlay");
     QApplication::setApplicationVersion(APPLICATION_VERSION);
 
     CommandLineParser parser;
