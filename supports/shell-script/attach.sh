@@ -1,3 +1,4 @@
+#!/usr/bin/env sh
 
 function send-geometry() {
     local x=$1 y=$2 w=$3 h=$4
