@@ -9,7 +9,7 @@ url="https://github.com/K4zoku/tosu-overlay-qt"
 license=('MIT')
 depends=('qt6-base' 'qt6-webengine' 'layer-shell-qt' 'tosu')
 conflicts=("${_pkgbase}")
-makedepends=('cmake' 'make' 'gcc')
+makedepends=('git' 'cmake' 'make' 'gcc')
 source=("${_pkgbase}::git+${url}.git")
 sha256sums=('SKIP')
 
