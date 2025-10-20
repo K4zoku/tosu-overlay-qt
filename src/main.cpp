@@ -30,10 +30,10 @@ int main(int argc, char *argv[]) {
         }
         return 0;
     case CommandLineParseResult::Status::HelpRequested:
-        parser.showHelp();
+        qInfo("%s", qPrintable(parser.helpText()));
         return 0;
     case CommandLineParseResult::Status::VersionRequested:
-        parser.showVersion();
+        qInfo("%s %s", APPLICATION_NAME, APPLICATION_VERSION);
         return 0;
     case CommandLineParseResult::Status::Ok:
         if (!ipc.run()) {
