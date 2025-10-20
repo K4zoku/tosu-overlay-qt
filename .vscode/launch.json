@@ -5,7 +5,7 @@
             "name": "Build and Debug",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/tosu-overlay",
+            "program": "${workspaceFolder}/build/debug/tosu-overlay",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

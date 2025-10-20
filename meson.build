@@ -5,19 +5,22 @@ project(
     license : 'MIT'
 )
 
+# Define application name
+app_name = meson.project_name()
+add_project_arguments('-DAPPLICATION_NAME="' + app_name + '"', language : 'cpp')
+
+# Define application version
 app_version = vcs_tag(
   command: ['git', 'describe'],
   input:  'include/version.h.in',
   output: 'version.h')
-
-app_name = meson.project_name()
-add_project_arguments('-DAPPLICATION_NAME="' + app_name + '"', language : 'cpp')
 
 # Find dependencies
 qt = import('qt6')
 qt_dep = dependency('Qt6', required: true, modules: ['Core', 'DBus', 'Widgets', 'WebEngineWidgets'])
 layershellqt_dep = dependency('LayerShellQt', required: true, modules: ['LayerShellQt::Interface'])
 
+# Source files
 src_files = files(
   'src/commandline.cpp',
   'src/ipc.cpp',
@@ -27,6 +30,7 @@ src_files = files(
   'src/webview.cpp'
 )
 
+# Header files that need moc
 moc_header_files = files(
   'include/ipc.h',
   'include/overlay.h',
@@ -34,15 +38,19 @@ moc_header_files = files(
   'include/webview.h'
 )
 
+# Compile moc
+moc_files = qt.compile_moc(headers: moc_header_files, dependencies: qt_dep)
+
+# Header files
 header_files = files(
   'include/commandline.h'
 ) + moc_header_files
 
-qrc_files = files('resources/resources.qrc')
-moc_files = qt.compile_moc(headers: moc_header_files, dependencies: qt_dep)
+# Resources
+qrc_files = files('res/resources.qrc')
 
 # Compile the resources
-qt_res = qt.compile_resources(name: 'resources', sources: qrc_files)
+qt_res = qt.compile_resources(sources: qrc_files)
 
 # Add include directory for header files
 inc = include_directories('include')

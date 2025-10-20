@@ -1,7 +1,7 @@
 # Tosu Overlay Linux
 
 <p align="center">
-  <img src="./resources/logo.svg" width="64" height="64">
+  <img src="./res/logo.svg" width="64" height="64">
 </p>
 
 > An overlay for osu!. Powered by Tosu, Qt 6, and Qt 6 WebEngine.
@@ -18,7 +18,7 @@
 - [ ] X11 support. (not tested yet)
 - [x] Multi-monitor.
 - [x] System tray.
-- [x] Attach overlay to osu! window (Currently supported KDE by kwin script in [supports/kwin-script](supports/kwin-script). You can use external script to send osu window geometry via D-Bus, contributions are welcome).
+- [x] Attach overlay to osu! window (Currently supported KDE by kwin script in [extra/kwin-script](extra/kwin-script). You can use external script to send osu window geometry via D-Bus, contributions are welcome).
 
 ## 📚 Dependencies
 
