@@ -1,0 +1,5 @@
+#pragma once
+#ifndef VERSION_H
+#define VERSION_H
+#define APPLICATION_VERSION "@VCS_TAG@"
+#endif // VERSION_H

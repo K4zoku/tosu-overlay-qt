@@ -2,6 +2,7 @@
 #define COMMANDLINE_H
 
 #include "ipc.h"
+#include "qtmetamacros.h"
 
 #include <optional>
 
@@ -32,6 +33,7 @@ class CommandLineParser : public QCommandLineParser
 public:
     CommandLineParser();
     CommandLineParseResult parseCommandLine();
+
 private:
     QCommandLineOption optionUrl;
     QCommandLineOption optionMonitor;

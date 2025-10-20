@@ -2,12 +2,13 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "configure",
+            "label": "setup",
             "type": "shell",
-            "command": "cmake",
+            "command": "meson",
             "args": [
-                "-S", "src",
-                "-B", "build"
+                "setup", 
+                "--buildtype=debug",
+                "build/debug",
             ],
             "group": {
                 "kind": "build",
@@ -18,9 +19,10 @@
         {
             "label": "build",
             "type": "shell",
-            "command": "cmake",
+            "command": "meson",
             "args": [
-                "--build", "build"
+                "compile",
+                "-C", "build/debug", 
             ],
             "group": {
                 "kind": "build",
@@ -28,7 +30,7 @@
             },
             "problemMatcher": ["$gcc"],
             "dependsOn": [
-                "configure"
+                "setup"
             ]
         }
     ]
