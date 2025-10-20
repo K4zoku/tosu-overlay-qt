@@ -1,0 +1,7 @@
+# ignore all
+**/*
+
+# include necessary files
+!.gitignore
+!PKGBUILD
+!tosu-overlay.desktop
