@@ -4,39 +4,38 @@
 #include "systemtray.h"
 #include "webview.h"
 
-#include <QWidget>
 #include <QRect>
+#include <QWidget>
 
-class Overlay : public QWidget
-{
-    Q_OBJECT
+class Overlay : public QWidget {
+  Q_OBJECT
 public:
-    Overlay(QWidget *parent = nullptr);
-    void setTosuUrl(QUrl url);
-    void initLayerShell();
-    void setOverlayGeometry(QRect rect);
+  Overlay(QWidget *parent = nullptr);
+  void setTosuUrl(QUrl url);
+  void initLayerShell();
+  void setOverlayGeometry(QRect rect);
 
 signals:
-    void toggleEditing();
-    void editingStarted();
-    void editingEnded();
-    void requestQuit();
-    void toggleVisibility();
-    
+  void toggleEditing();
+  void editingStarted();
+  void editingEnded();
+  void requestQuit();
+  void toggleVisibility();
+
 public slots:
-    void onOsuGeometryChanged(QRect rect);
+  void onOsuGeometryChanged(QRect rect);
 
 private slots:
-    void onEditingStarted();
-    void onEditingEnded();
-    void onEditingToggled();
-    void onVisibilityToggled();
-    void onQuitRequested();
+  void onEditingStarted();
+  void onEditingEnded();
+  void onEditingToggled();
+  void onVisibilityToggled();
+  void onQuitRequested();
 
 private:
-    bool editing = false;
-    WebView *webView = nullptr;
-    SystemTray *systemTray = nullptr;
+  bool editing = false;
+  WebView *webView = nullptr;
+  SystemTray *systemTray = nullptr;
 };
 
 #endif // OVERLAY_H

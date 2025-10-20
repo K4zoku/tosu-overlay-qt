@@ -4,34 +4,27 @@
 #include <QDBusConnection>
 #include <QRect>
 
+enum class IpcCommand { None, ToggleEditing, ToggleOverlay, QuitOverlay };
 
-enum class IpcCommand {
-  None,
-  ToggleEditing,
-  ToggleOverlay,
-  QuitOverlay
-};
-
-class Ipc : public QObject
-{
-Q_OBJECT
-Q_CLASSINFO("D-Bus Interface", "app.tosu.Overlay.Ipc")
+class Ipc : public QObject {
+  Q_OBJECT
+  Q_CLASSINFO("D-Bus Interface", "app.tosu.Overlay.Ipc")
 public:
-    bool run();
-    static bool send(const IpcCommand command);
+  bool run();
+  static bool send(const IpcCommand command);
 
 signals:
-    void ipcToggleEditing();
-    void ipcToggleOverlay();
-    void ipcQuit();
-    void ipcGeometryChanged(QRect rect);
+  void ipcToggleEditing();
+  void ipcToggleOverlay();
+  void ipcQuit();
+  void ipcGeometryChanged(QRect rect);
 
 public slots:
-    bool call(const int command);
-    void toggleEditing();
-    void toggleOverlay();
-    void quitOverlay();
-    void geometryChanged(const int x, const int y, const int width, const int height);
+  bool call(const int command);
+  void toggleEditing();
+  void toggleOverlay();
+  void quitOverlay();
+  void geometryChanged(const int x, const int y, const int width, const int height);
 };
 
 #endif // IPC_H

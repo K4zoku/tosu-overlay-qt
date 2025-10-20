@@ -5,49 +5,47 @@
 
 static const QUrl TOSU_DEFAULT_BASE_URL = QUrl(QString("https://127.0.0.1:24050"));
 
-class WebView : public QWebEngineView
-{
-Q_OBJECT
+class WebView : public QWebEngineView {
+  Q_OBJECT
 
 public:
-    WebView(QWidget *parent = nullptr, const QUrl baseUrl = TOSU_DEFAULT_BASE_URL);
-    ~WebView();
-    void setTosuBaseUrl(const QUrl baseUrl);
+  WebView(QWidget *parent = nullptr, const QUrl baseUrl = TOSU_DEFAULT_BASE_URL);
+  ~WebView();
+  void setTosuBaseUrl(const QUrl baseUrl);
 
 signals:
-    void editingEnd();
+  void editingEnd();
 
 public slots:
-    void onEditingStarted();
-    void onEditingEnded();
-    void onLoaded(bool ok);
-    void onKeyDown(QString key);
+  void onEditingStarted();
+  void onEditingEnded();
+  void onLoaded(bool ok);
+  void onKeyDown(QString key);
 
 private:
-    QUrl baseUrl;
+  QUrl baseUrl;
 };
 
-class WebPage : public QWebEnginePage
-{
-    Q_OBJECT
+class WebPage : public QWebEnginePage {
+  Q_OBJECT
 public:
-    WebPage(WebView *parent = nullptr);
+  WebPage(WebView *parent = nullptr);
 
 private:
-    void javaScriptConsoleMessage(QWebEnginePage::JavaScriptConsoleMessageLevel level, const QString &message, int lineNumber, const QString &sourceID);
+  void javaScriptConsoleMessage(QWebEnginePage::JavaScriptConsoleMessageLevel level, const QString &message,
+                                int lineNumber, const QString &sourceID);
 };
 
-class WebChannelObject : public QObject
-{
-    Q_OBJECT
+class WebChannelObject : public QObject {
+  Q_OBJECT
 public:
-    WebChannelObject(QObject *parent = nullptr);
+  WebChannelObject(QObject *parent = nullptr);
 
 public slots:
-    void onKeyDown(QString key);
+  void onKeyDown(QString key);
 
 signals:
-    void keyDown(QString key);
+  void keyDown(QString key);
 };
 
 #endif // WEBVIEW_H
