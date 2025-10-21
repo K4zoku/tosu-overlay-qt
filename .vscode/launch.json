@@ -10,7 +10,7 @@
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
-            "preLaunchTask": "build",
+            "preLaunchTask": "build debug",
             "MIMode": "gdb",
             "setupCommands": [
                 {
