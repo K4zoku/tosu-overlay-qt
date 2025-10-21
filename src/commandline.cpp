@@ -102,7 +102,7 @@ bool CommandLineParser::parseMonitorOption(CommandLineParseResult *result) {
     }
     if (!result->screen) {
       result->status = CommandLineParseResult::Status::Error;
-      auto errorString = tr("main", "Invalid monitor %1").arg(value);
+      auto errorString = tr("Invalid monitor %1").arg(value);
       errorString.append("\n");
       errorString.append(availableMonitorMessage(screens));
       result->error = errorString;
@@ -110,7 +110,7 @@ bool CommandLineParser::parseMonitorOption(CommandLineParseResult *result) {
     }
   }
   result->status = CommandLineParseResult::Status::Error;
-  auto errorString = tr("main", "Invalid monitor %1").arg(QString::number(screenId));
+  auto errorString = tr("Invalid monitor %1").arg(QString::number(screenId));
   errorString.append("\n");
   errorString.append(availableMonitorMessage(screens));
   result->error = errorString;
