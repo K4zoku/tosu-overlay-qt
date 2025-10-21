@@ -22,6 +22,7 @@ layershellqt_dep = dependency('LayerShellQt', required: true, modules: ['LayerSh
 
 # Source files
 src_files = files(
+  'src/beveledbutton.cpp',
   'src/commandline.cpp',
   'src/ipc.cpp',
   'src/main.cpp',
@@ -32,6 +33,7 @@ src_files = files(
 
 # Header files that need moc
 moc_header_files = files(
+  'include/beveledbutton.h',
   'include/ipc.h',
   'include/overlay.h',
   'include/systemtray.h',
@@ -58,7 +60,7 @@ inc = include_directories('include')
 # Add executable target
 executable = executable(
     app_name, 
-    header_files + src_files + moc_files + qt_res, 
+    src_files + moc_files + qt_res, 
     dependencies: [qt_dep, layershellqt_dep], 
     include_directories: inc,
     install: true

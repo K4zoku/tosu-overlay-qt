@@ -35,8 +35,7 @@ Overlay::Overlay(QWidget *parent) : QWidget(parent) {
   connect(systemTray, SIGNAL(toggleVisibility()), this, SIGNAL(toggleVisibility()));
   connect(systemTray, SIGNAL(requestQuit()), this, SIGNAL(requestQuit()));
 
-  show();
-  hide();
+  createWinId();
 
   connect(windowHandle(), SIGNAL(visibleChanged(bool)), systemTray, SLOT(onVisibleChange(bool)));
   connect(this, SIGNAL(editingStarted()), systemTray, SLOT(onEditingStarted()));

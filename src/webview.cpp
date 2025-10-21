@@ -1,10 +1,14 @@
 #include "webview.h"
+#include "beveledbutton.h"
 
 #include <QApplication>
 #include <QFile>
 #include <QMessageBox>
 #include <QPushButton>
+#include <QStyle>
+#include <QScreen>
 #include <QTextStream>
+#include <QVBoxLayout>
 #include <QWebChannel>
 
 WebView::WebView(QWidget *parent, const QUrl baseUrl) : QWebEngineView{parent} {
@@ -32,17 +36,46 @@ static inline void inject(QWebEnginePage *page) {
 }
 
 void WebView::onLoaded(bool ok) {
+  parentWidget()->setVisible(ok);
   if (ok) {
     inject(page());
   } else {
-    parentWidget()->hide();
-    auto *msgBox = new QMessageBox(QMessageBox::Critical, tr("Error"), tr("Error connecting with tosu, is it running?"),
-                                   QMessageBox::Yes | QMessageBox::No, this);
-    msgBox->button(QMessageBox::Yes)->setText(tr("Yes, reload the overlay"));
-    msgBox->button(QMessageBox::No)->setText(tr("No, close the overlay"));
+    auto wrapper = new QWidget();
+    wrapper->setWindowTitle("Error");
+    wrapper->setAttribute(Qt::WA_TranslucentBackground);
+    auto layout = new QVBoxLayout(wrapper);
+    wrapper->setLayout(layout);
+
+    auto *msgBox = new QMessageBox();
+    msgBox->setAutoFillBackground(true);
+    layout->setAlignment(Qt::AlignCenter);
+    layout->addWidget(msgBox);
+    auto screen = wrapper->screen();
+    QRect region((screen->geometry().width() - msgBox->width()) / 2, (screen->geometry().height() - msgBox->height()) / 2, msgBox->width(), msgBox->height());
+    wrapper->setMask(region);
+    
+    msgBox->setIcon(QMessageBox::Icon::Critical);
+    msgBox->setText(tr("Error connecting to tosu"));
+    msgBox->setInformativeText(tr("Is tosu running?"));
+    msgBox->setSizeIncrement(200, 100);
+    msgBox->setTextInteractionFlags(Qt::NoTextInteraction);
+
+    auto yes = new BeveledButton(msgBox);
+    auto no = new BeveledButton(msgBox);
+    yes->setIcon(style()->standardIcon(QStyle::SP_BrowserReload));
+    no->setIcon(style()->standardIcon(QStyle::SP_BrowserStop));
+    yes->setText(tr("Yes, reload the overlay"));
+    no->setText(tr("No, close the overlay"));
+    msgBox->addButton(yes, QMessageBox::YesRole);
+    msgBox->addButton(no, QMessageBox::NoRole);
+
     connect(msgBox, SIGNAL(rejected()), parentWidget(), SLOT(onQuitRequested()));
-    connect(msgBox, &QMessageBox::accepted, this, [this]() { reload(); });
-    msgBox->show();
+    connect(msgBox, &QMessageBox::accepted, this, [this, wrapper]() {
+      wrapper->close();
+      reload();
+    });
+
+    wrapper->show();
   }
 }
 
