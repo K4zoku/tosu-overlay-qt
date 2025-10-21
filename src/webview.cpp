@@ -43,7 +43,7 @@ void WebView::onLoaded(bool ok) {
     inject(page());
   } else {
     auto *msgBox = new QMessageBox(parentWidget());
-    msgBox->setFixedSize(440, 120);
+    msgBox->setFixedSize(462, 125);
     msgBox->createWinId();
     if (auto layerShellWindow = LayerShellQt::Window::get(msgBox->windowHandle())) {
       layerShellWindow->setExclusiveZone(1);
