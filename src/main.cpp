@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
     if (options.attach) {
       QObject::connect(&ipc, SIGNAL(ipcGeometryChanged(QRect)), &overlay, SLOT(onOsuGeometryChanged(QRect)));
     } else {
-      overlay.setOverlayGeometry((*options.screen)->geometry());
+      overlay.setGeometry((*options.screen)->geometry());
     }
     overlay.setTosuUrl(*options.url);
     overlay.initLayerShell();
