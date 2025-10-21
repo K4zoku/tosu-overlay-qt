@@ -1,6 +1,8 @@
 #include "webview.h"
 #include "beveledbutton.h"
+#include "qmargins.h"
 
+#include <LayerShellQt/window.h>
 #include <QApplication>
 #include <QFile>
 #include <QMessageBox>
@@ -36,29 +38,26 @@ static inline void inject(QWebEnginePage *page) {
 }
 
 void WebView::onLoaded(bool ok) {
-  parentWidget()->setVisible(ok);
+  setVisible(ok);
   if (ok) {
     inject(page());
   } else {
-    auto wrapper = new QWidget();
-    wrapper->setWindowTitle("Error");
-    wrapper->setAttribute(Qt::WA_TranslucentBackground);
-    auto layout = new QVBoxLayout(wrapper);
-    wrapper->setLayout(layout);
-
-    auto *msgBox = new QMessageBox();
-    msgBox->setAutoFillBackground(true);
-    layout->setAlignment(Qt::AlignCenter);
-    layout->addWidget(msgBox);
-    auto screen = wrapper->screen();
-    QRect region((screen->geometry().width() - msgBox->width()) / 2, (screen->geometry().height() - msgBox->height()) / 2, msgBox->width(), msgBox->height());
-    wrapper->setMask(region);
-    
+    auto *msgBox = new QMessageBox(parentWidget());
+    msgBox->setFixedSize(440, 120);
+    msgBox->createWinId();
+    if (auto layerShellWindow = LayerShellQt::Window::get(msgBox->windowHandle())) {
+      layerShellWindow->setExclusiveZone(1);
+      layerShellWindow->setLayer(LayerShellQt::Window::LayerTop);
+      auto screen = msgBox->screen();
+      int marginX = (screen->geometry().width() - msgBox->width()) / 2;
+      int marginY = (screen->geometry().height() - msgBox->height()) / 2;
+      layerShellWindow->setMargins(QMargins(marginX, marginY, marginX, marginY));
+    } 
+    msgBox->setAutoFillBackground(true);    
     msgBox->setIcon(QMessageBox::Icon::Critical);
-    msgBox->setText(tr("Error connecting to tosu"));
-    msgBox->setInformativeText(tr("Is tosu running?"));
-    msgBox->setSizeIncrement(200, 100);
+    msgBox->setText(tr("Error connecting to tosu, is it running?"));
     msgBox->setTextInteractionFlags(Qt::NoTextInteraction);
+    msgBox->update();
 
     auto yes = new BeveledButton(msgBox);
     auto no = new BeveledButton(msgBox);
@@ -70,12 +69,11 @@ void WebView::onLoaded(bool ok) {
     msgBox->addButton(no, QMessageBox::NoRole);
 
     connect(msgBox, SIGNAL(rejected()), parentWidget(), SLOT(onQuitRequested()));
-    connect(msgBox, &QMessageBox::accepted, this, [this, wrapper]() {
-      wrapper->close();
+    connect(msgBox, &QMessageBox::accepted, this, [this]() {
       reload();
     });
 
-    wrapper->show();
+    msgBox->show();
   }
 }
 
