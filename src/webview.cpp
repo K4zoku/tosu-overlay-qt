@@ -2,7 +2,7 @@
 #include "beveledbutton.h"
 #include "qmargins.h"
 
-#include <LayerShellQt/window.h>
+#include <LayerShellQt/Window>
 #include <QApplication>
 #include <QFile>
 #include <QMessageBox>
