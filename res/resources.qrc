@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
+        <file>scripts/tosu-overlay-injector.js</file>
         <file>icons/edit.svg</file>
         <file>icons/eye-off.svg</file>
         <file>icons/eye.svg</file>

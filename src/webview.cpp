@@ -1,8 +1,10 @@
 #include "webview.h"
 
 #include <QApplication>
+#include <QFile>
 #include <QMessageBox>
 #include <QPushButton>
+#include <QTextStream>
 #include <QWebChannel>
 
 WebView::WebView(QWidget *parent, const QUrl baseUrl) : QWebEngineView{parent} {
@@ -13,32 +15,33 @@ WebView::WebView(QWidget *parent, const QUrl baseUrl) : QWebEngineView{parent} {
 
 WebView::~WebView() { delete this->page(); }
 
-static const char *INJECT_WEBCHANNEL_SCRIPT =
-"(() => {"
-"  let script = document.createElement('script');"
-"  script.onload = function() {"
-"    let object = null;"
-"    new QWebChannel(qt.webChannelTransport, (channel) => object = channel.objects.object);"
-"    document.addEventListener('keydown', (event) => object?.onKeyDown(event.key));"
-"  };"
-"  script.src = 'qrc:///qtwebchannel/qwebchannel.js';"
-"  document.body.appendChild(script);"
-"})();";
+static QString script;
+
+static inline void inject(QWebEnginePage *page) {
+  if (script.isEmpty()) {
+    QFile file(":/scripts/tosu-overlay-injector.js");
+    if (!file.open(QFile::ReadOnly)) {
+      qWarning("Failed to open tosu-overlay-injector.js");
+      return;
+    }
+    QTextStream in(&file);
+    script = in.readAll();
+    file.close();
+  }
+  page->runJavaScript(script);
+}
 
 void WebView::onLoaded(bool ok) {
   if (ok) {
-    page()->runJavaScript(INJECT_WEBCHANNEL_SCRIPT);
+    inject(page());
   } else {
     parentWidget()->hide();
-    auto *msgBox = new QMessageBox(this->parentWidget());
-    msgBox->setText(tr("Error connecting with tosu, is it running?"));
-    auto yes = msgBox->addButton(tr("Yes, reload the overlay"), QMessageBox::YesRole);
-    auto no = msgBox->addButton(tr("No, close the overlay"), QMessageBox::NoRole);
-    msgBox->setDefaultButton(yes);
-    msgBox->setEscapeButton(no);
+    auto *msgBox = new QMessageBox(QMessageBox::Critical, tr("Error"), tr("Error connecting with tosu, is it running?"),
+                                   QMessageBox::Yes | QMessageBox::No, this);
+    msgBox->button(QMessageBox::Yes)->setText(tr("Yes, reload the overlay"));
+    msgBox->button(QMessageBox::No)->setText(tr("No, close the overlay"));
     connect(msgBox, SIGNAL(rejected()), parentWidget(), SLOT(onQuitRequested()));
-    connect(msgBox, &QMessageBox::accepted, this, [this]() { this->reload(); });
-    msgBox->setModal(false);
+    connect(msgBox, &QMessageBox::accepted, this, [this]() { reload(); });
     msgBox->show();
   }
 }
