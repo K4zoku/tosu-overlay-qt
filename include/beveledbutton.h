@@ -8,14 +8,9 @@
 #include <QPropertyAnimation>
 #include <QPushButton>
 
-enum BevelCorner { 
-    TopLeft = 0x1, 
-    TopRight = 0x2,
-    BottomRight = 0x4,
-    BottomLeft = 0x8
-};
+enum BevelCorner { TopLeft = 0x1, TopRight = 0x2, BottomRight = 0x4, BottomLeft = 0x8 };
 Q_DECLARE_FLAGS(BevelCorners, BevelCorner);
-Q_DECLARE_OPERATORS_FOR_FLAGS (BevelCorners);
+Q_DECLARE_OPERATORS_FOR_FLAGS(BevelCorners);
 
 class BeveledButton : public QPushButton {
   Q_OBJECT

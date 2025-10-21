@@ -7,8 +7,8 @@
 #include <QFile>
 #include <QMessageBox>
 #include <QPushButton>
-#include <QStyle>
 #include <QScreen>
+#include <QStyle>
 #include <QTextStream>
 #include <QVBoxLayout>
 #include <QWebChannel>
@@ -46,14 +46,12 @@ void WebView::onLoaded(bool ok) {
     msgBox->setFixedSize(462, 125);
     msgBox->createWinId();
     if (auto layerShellWindow = LayerShellQt::Window::get(msgBox->windowHandle())) {
-      layerShellWindow->setExclusiveZone(1);
-      layerShellWindow->setLayer(LayerShellQt::Window::LayerTop);
       auto screen = msgBox->screen();
       int marginX = (screen->geometry().width() - msgBox->width()) / 2;
       int marginY = (screen->geometry().height() - msgBox->height()) / 2;
       layerShellWindow->setMargins(QMargins(marginX, marginY, marginX, marginY));
-    } 
-    msgBox->setAutoFillBackground(true);    
+    }
+    msgBox->setAutoFillBackground(true);
     msgBox->setIcon(QMessageBox::Icon::Critical);
     msgBox->setText(tr("Error connecting to tosu, is it running?"));
     msgBox->setTextInteractionFlags(Qt::NoTextInteraction);
@@ -69,9 +67,7 @@ void WebView::onLoaded(bool ok) {
     msgBox->addButton(no, QMessageBox::NoRole);
 
     connect(msgBox, SIGNAL(rejected()), parentWidget(), SLOT(onQuitRequested()));
-    connect(msgBox, &QMessageBox::accepted, this, [this]() {
-      reload();
-    });
+    connect(msgBox, &QMessageBox::accepted, this, [this]() { reload(); });
 
     msgBox->show();
   }
