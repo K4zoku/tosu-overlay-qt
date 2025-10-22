@@ -1,9 +1,9 @@
 #include "beveledbutton.h"
-#include "qpoint.h"
 
 #include <QApplication>
 #include <QPainter>
 #include <QPalette>
+#include <QPoint>
 #include <QPolygon>
 #include <QStyleOptionButton>
 

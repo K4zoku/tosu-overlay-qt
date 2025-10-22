@@ -1,7 +1,6 @@
 #ifndef BEVELEDBUTTON_H
 #define BEVELEDBUTTON_H
 
-#include "qtmetamacros.h"
 #include <QColor>
 #include <QPalette>
 #include <QPolygon>
