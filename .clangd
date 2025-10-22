@@ -1,12 +1,13 @@
-Style:
-  QuotedHeaders: "include/.*"
-
-
 CompileFlags:
     Remove:
         - -mno-direct-extern-access
     Add: 
+        - -Wall
+        - -xc++
         - -fno-direct-access-external-data
+
+Style:
+  AngledHeaders: ["qt6/*"]
 
 Completion:
     HeaderInsertion: Never
