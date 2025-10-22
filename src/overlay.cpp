@@ -11,7 +11,7 @@ using namespace LayerShellQt;
 
 Overlay::Overlay(QWidget *parent) : QWidget(parent) {
   setAttribute(Qt::WA_TranslucentBackground, true);
-  setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::NoDropShadowWindowHint);
+  setWindowFlags(Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint | Qt::WindowStaysOnTopHint | Qt::X11BypassWindowManagerHint);
 
   auto *layout = new QVBoxLayout(this);
   layout->setContentsMargins(0, 0, 0, 0);
@@ -46,7 +46,7 @@ Overlay::Overlay(QWidget *parent) : QWidget(parent) {
 }
 
 void Overlay::setOverlayGeometry(QRect rect) {
-  if (auto layerShellWindow = Window::get(windowHandle())) {
+  if (auto layerShellWindow = QApplication::platformName() == "wayland" ? Window::get(windowHandle()) : nullptr) {
     QScreen *screen = this->screen();
     int marginRight = screen->geometry().width() - (rect.x() + rect.width());
     int marginBottom = screen->geometry().height() - (rect.y() + rect.height());
@@ -61,9 +61,7 @@ void Overlay::onOsuGeometryChanged(QRect rect) { setOverlayGeometry(rect); }
 void Overlay::setTosuUrl(QUrl url) { webView->setTosuBaseUrl(url); }
 
 void Overlay::initLayerShell() {
-  if (QApplication::platformName() != "wayland")
-    return;
-  if (auto layerShellWindow = Window::get(windowHandle())) {
+  if (auto layerShellWindow = QApplication::platformName() == "wayland" ? Window::get(windowHandle()) : nullptr) {
     layerShellWindow->setExclusiveZone(-1);
     layerShellWindow->setScope("tosu-overlay");
     layerShellWindow->setLayer(Window::LayerOverlay);
@@ -82,7 +80,7 @@ void Overlay::onEditingStarted() {
   editing = true;
   auto window = windowHandle();
   window->setMask(QRegion());
-  if (auto layerShellWindow = Window::get(window)) {
+  if (auto layerShellWindow = QApplication::platformName() == "wayland" ? Window::get(windowHandle()) : nullptr) {
     layerShellWindow->setKeyboardInteractivity(Window::KeyboardInteractivityExclusive);
   }
 }
@@ -91,7 +89,7 @@ void Overlay::onEditingEnded() {
   editing = false;
   auto window = windowHandle();
   window->setMask(QRegion(-1, -1, 1, 1));
-  if (auto layerShellWindow = Window::get(window)) {
+  if (auto layerShellWindow = QApplication::platformName() == "wayland" ? Window::get(windowHandle()) : nullptr) {
     layerShellWindow->setKeyboardInteractivity(Window::KeyboardInteractivityNone);
   }
 }

@@ -45,7 +45,7 @@ void WebView::onLoaded(bool ok) {
     auto *msgBox = new QMessageBox(parentWidget());
     msgBox->setFixedSize(462, 125);
     msgBox->createWinId();
-    if (auto layerShellWindow = LayerShellQt::Window::get(msgBox->windowHandle())) {
+    if (auto layerShellWindow = QApplication::platformName() == "wayland" ? LayerShellQt::Window::get(msgBox->windowHandle()) : nullptr) {
       auto screen = msgBox->screen();
       int marginX = (screen->geometry().width() - msgBox->width()) / 2;
       int marginY = (screen->geometry().height() - msgBox->height()) / 2;
