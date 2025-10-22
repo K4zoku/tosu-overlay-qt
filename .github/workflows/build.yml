@@ -28,7 +28,7 @@ jobs:
       - name: Intall dependencies 📥
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          packages: qtbase5-dev qtwebengine5-dev liblayershellqtinterface-dev
+          packages: meson qtbase5-dev qtwebengine5-dev liblayershellqtinterface-dev
           version: 1.0
       - name: Build 🏗️
         run: |
