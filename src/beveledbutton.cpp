@@ -83,7 +83,12 @@ void BeveledButton::paintEvent(QPaintEvent *event) {
   painter.drawText(rect, Qt::AlignCenter, text());
 }
 
-void BeveledButton::enterEvent(QEnterEvent *event) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+void BeveledButton::enterEvent(QEnterEvent *event)
+#else
+void BeveledButton::enterEvent(QEvent *event)
+#endif
+{
   colorAnimation->stop();
   colorAnimation->setStartValue(color);
   colorAnimation->setEndValue(palette.mid().color());
