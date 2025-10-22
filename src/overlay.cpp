@@ -10,7 +10,7 @@
 using namespace LayerShellQt;
 
 Overlay::Overlay(QWidget *parent) : QWidget(parent) {
-  setAttribute(Qt::WA_TranslucentBackground, true);
+  setAttribute(Qt::WA_TranslucentBackground);
   setWindowFlags(Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint | Qt::WindowStaysOnTopHint | Qt::X11BypassWindowManagerHint);
 
   auto *layout = new QVBoxLayout(this);
@@ -79,7 +79,11 @@ void Overlay::onEditingToggled() {
 void Overlay::onEditingStarted() {
   editing = true;
   auto window = windowHandle();
-  window->setMask(QRegion());
+  if (QApplication::platformName() == "xcb") {
+    window->setFlag(Qt::WindowTransparentForInput, false);
+  } else {
+    window->setMask(QRegion());
+  }
   if (auto layerShellWindow = QApplication::platformName() == "wayland" ? Window::get(windowHandle()) : nullptr) {
     layerShellWindow->setKeyboardInteractivity(Window::KeyboardInteractivityExclusive);
   }
@@ -88,7 +92,11 @@ void Overlay::onEditingStarted() {
 void Overlay::onEditingEnded() {
   editing = false;
   auto window = windowHandle();
-  window->setMask(QRegion(-1, -1, 1, 1));
+  if (QApplication::platformName() == "xcb") {
+    window->setFlag(Qt::WindowTransparentForInput, true);
+  } else {
+    window->setMask(QRegion(-1, -1, 1, 1));
+  }
   if (auto layerShellWindow = QApplication::platformName() == "wayland" ? Window::get(windowHandle()) : nullptr) {
     layerShellWindow->setKeyboardInteractivity(Window::KeyboardInteractivityNone);
   }

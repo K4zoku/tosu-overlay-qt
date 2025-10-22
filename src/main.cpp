@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
     }
     overlay.setTosuUrl(*options.url);
     overlay.initLayerShell();
-    overlay.showFullScreen();
+    overlay.showMaximized();
 
     return app.exec();
   }
