@@ -32,6 +32,8 @@ jobs:
     steps:
       - name: Checkout 🛒
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: Intall dependencies 📥
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
