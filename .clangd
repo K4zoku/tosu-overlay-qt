@@ -1,6 +1,12 @@
+Style:
+  QuotedHeaders: "include/.*"
+
+
 CompileFlags:
     Remove:
         - -mno-direct-extern-access
     Add: 
         - -fno-direct-access-external-data
-        
+
+Completion:
+    HeaderInsertion: Never

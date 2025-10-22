@@ -1,0 +1,6 @@
+{
+    "C_Cpp.default.compileCommands": "${config:mesonbuild.buildFolder}/compile_commands.json",
+    "C_Cpp.default.configurationProvider": "mesonbuild.mesonbuild",
+    "mesonbuild.modifySettings": false,
+    "sonarlint.pathToCompileCommands": "${config:C_Cpp.default.compileCommands}"
+}
