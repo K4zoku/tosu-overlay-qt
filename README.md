@@ -14,8 +14,8 @@
 - [x] Overlay edit mode.
   - [x] Press Esc to exit editing.
 - [x] Global hotkey support. (need manual configuration per compositor/DE)
-- [x] Wayland support.
-- [ ] X11 support. (not tested yet)
+- [x] Wayland support. (tested on KDE Plasma and hyprland. GNOME wayland is not supported yet)
+- [x] X11 support. (tested on XFCE and Cinnamon)
 - [x] Multi-monitor.
 - [x] System tray.
 - [x] Attach overlay to osu! window (Currently supported KDE by kwin script in [extra/kwin-script](extra/kwin-script). You can use external script to send osu window geometry via D-Bus, contributions are welcome).
