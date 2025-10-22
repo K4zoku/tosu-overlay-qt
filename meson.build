@@ -19,6 +19,7 @@ qt_dep = dependency(
   required: true,
   modules: ['Core', 'DBus', 'Widgets', 'WebEngineWidgets'],
 )
+layershellqt_dep = dependency('LayerShellQt', required: true, modules: ['LayerShellQt::Interface'], version: '>=6.0.0')
 else
 qt = import('qt5')
 qt_dep = dependency(
@@ -26,8 +27,8 @@ qt_dep = dependency(
   required: true,
   modules: ['Core', 'DBus', 'Widgets', 'WebEngineWidgets'],
 )
+layershellqt_dep = dependency('LayerShellQt', required: true, modules: ['LayerShellQt::Interface'], version: '>=5.0.0')
 endif
-layershellqt_dep = dependency('LayerShellQt', required: true, modules: ['LayerShellQt::Interface'])
 
 # Source files
 src_files = files(
