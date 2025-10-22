@@ -43,7 +43,7 @@ void BeveledButton::paintEvent(QPaintEvent *event) {
 
   painter.setRenderHint(QPainter::Antialiasing);
   painter.setBrush(getColor());
-  painter.setPen(palette.accent().color());
+  painter.setPen(palette.shadow().color());
   QPolygon polygon;
   if (bevelCorners & BevelCorner::TopLeft) {
     polygon << QPoint(0, bevelSize);
