@@ -2,7 +2,14 @@ name: Build
 
 on:
   push:
-    branches: [ci-testing]
+    branches: [main]
+    paths:
+      - ".github/workflows/build.yml"
+      - "include/**/*"
+      - "src/**/*"
+      - "test/**/*"
+  pull_request:
+    branches: [main]
     paths:
       - ".github/workflows/build.yml"
       - "include/**/*"
