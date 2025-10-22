@@ -12,12 +12,21 @@ app_version = vcs_tag(
 )
 
 # Find dependencies
+if get_option('use_qt6')
 qt = import('qt6')
 qt_dep = dependency(
   'Qt6',
   required: true,
   modules: ['Core', 'DBus', 'Widgets', 'WebEngineWidgets'],
 )
+else
+qt = import('qt5')
+qt_dep = dependency(
+  'Qt5',
+  required: true,
+  modules: ['Core', 'DBus', 'Widgets', 'WebEngineWidgets'],
+)
+endif
 layershellqt_dep = dependency('LayerShellQt', required: true, modules: ['LayerShellQt::Interface'])
 
 # Source files

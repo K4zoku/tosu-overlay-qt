@@ -6,6 +6,7 @@
 #include <QPolygon>
 #include <QPropertyAnimation>
 #include <QPushButton>
+#include <QtGlobal>
 
 enum BevelCorner { TopLeft = 0x1, TopRight = 0x2, BottomRight = 0x4, BottomLeft = 0x8 };
 Q_DECLARE_FLAGS(BevelCorners, BevelCorner);
@@ -21,7 +22,11 @@ public:
   BeveledButton(QWidget *parent = nullptr);
   ~BeveledButton();
   void paintEvent(QPaintEvent *event) override;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
   void enterEvent(QEnterEvent *event) override;
+#else
+  void enterEvent(QEvent *event) override;
+#endif
   void leaveEvent(QEvent *event) override;
   void mousePressEvent(QMouseEvent *event) override;
   void mouseReleaseEvent(QMouseEvent *event) override;
