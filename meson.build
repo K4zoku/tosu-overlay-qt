@@ -50,7 +50,7 @@ header_files = files('include/commandline.h') + moc_header_files
 qrc_files = files('res/resources.qrc')
 
 # Compile the resources
-qt_res = qt.compile_resources(sources: qrc_files)
+qt_res = qt.compile_resources(name: app_name + '-resources', sources: qrc_files)
 
 # Add include directory for header files
 inc = include_directories('include')
