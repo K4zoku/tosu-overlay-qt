@@ -6,6 +6,7 @@
         <file>icons/eye.svg</file>
         <file>icons/log-out.svg</file>
         <file>icons/save.svg</file>
+        <file>icons/refresh-cw.svg</file>
         <file>logo.svg</file>
     </qresource>
 </RCC>

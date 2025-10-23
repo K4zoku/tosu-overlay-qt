@@ -8,16 +8,20 @@ SystemTray::SystemTray(QObject *parent) : QSystemTrayIcon{parent} {
 
   actionShowHide = new QAction(tr("Hide/Show overlay"), this);
   actionEdit = new QAction(tr("Toggle overlay editing"), this);
+  actionReload = new QAction(tr("Reload overlay"), this);
+  actionReload->setIcon(QIcon(QPixmap(":/icons/refresh-cw.svg")));
   actionQuit = new QAction(tr("Quit"), this);
   actionQuit->setIcon(QIcon(QPixmap(":/icons/log-out.svg")));
 
   connect(actionShowHide, SIGNAL(triggered()), this, SIGNAL(toggleVisibility()));
   connect(actionEdit, SIGNAL(triggered()), this, SIGNAL(toggleEditing()));
+  connect(actionReload, SIGNAL(triggered()), this, SIGNAL(reloadOverlay()));
   connect(actionQuit, SIGNAL(triggered()), this, SIGNAL(requestQuit()));
 
   menu = new QMenu();
   menu->addAction(actionShowHide);
   menu->addAction(actionEdit);
+  menu->addAction(actionReload);
   menu->addSeparator();
   menu->addAction(actionQuit);
   this->setContextMenu(menu);

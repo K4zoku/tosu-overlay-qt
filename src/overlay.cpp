@@ -33,6 +33,7 @@ Overlay::Overlay(QWidget *parent) : QWidget(parent) {
   systemTray = new SystemTray(this);
   connect(systemTray, SIGNAL(toggleEditing()), this, SIGNAL(toggleEditing()));
   connect(systemTray, SIGNAL(toggleVisibility()), this, SIGNAL(toggleVisibility()));
+  connect(systemTray, SIGNAL(reloadOverlay()), webView, SLOT(reload()));
   connect(systemTray, SIGNAL(requestQuit()), this, SIGNAL(requestQuit()));
 
   createWinId();

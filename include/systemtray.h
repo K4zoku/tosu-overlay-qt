@@ -15,6 +15,7 @@ signals:
   void toggleEditing();
   void toggleVisibility();
   void requestQuit();
+  void reloadOverlay();
 
 public slots:
   void onVisibleChange(bool visible);
@@ -27,6 +28,7 @@ private slots:
 private:
   QAction *actionShowHide;
   QAction *actionEdit;
+  QAction *actionReload;
   QAction *actionQuit;
   QMenu *menu;
 };
