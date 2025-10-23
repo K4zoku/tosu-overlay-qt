@@ -39,8 +39,8 @@ void BeveledButton::setBevelCorners(BevelCorners bevelCorners) {
 }
 
 void BeveledButton::paintEvent(QPaintEvent *event) {
+  Q_UNUSED(event);
   QPainter painter(this);
-
   painter.setRenderHint(QPainter::Antialiasing);
   painter.setBrush(getColor());
   painter.setPen(palette.shadow().color());
@@ -89,6 +89,7 @@ void BeveledButton::enterEvent(QEnterEvent *event)
 void BeveledButton::enterEvent(QEvent *event)
 #endif
 {
+  QPushButton::enterEvent(event);
   colorAnimation->stop();
   colorAnimation->setStartValue(color);
   colorAnimation->setEndValue(palette.mid().color());
@@ -96,6 +97,7 @@ void BeveledButton::enterEvent(QEvent *event)
 }
 
 void BeveledButton::leaveEvent(QEvent *event) {
+  QPushButton::leaveEvent(event);
   colorAnimation->stop();
   colorAnimation->setStartValue(color);
   colorAnimation->setEndValue(palette.button().color());

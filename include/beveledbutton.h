@@ -14,9 +14,9 @@ Q_DECLARE_OPERATORS_FOR_FLAGS(BevelCorners);
 
 class BeveledButton : public QPushButton {
   Q_OBJECT
-  Q_PROPERTY(QColor color READ getColor WRITE setColor);
-  Q_PROPERTY(int bevelSize READ getBevelSize WRITE setBevelSize);
-  Q_PROPERTY(BevelCorners bevelCorners READ getBevelCorners WRITE setBevelCorners);
+  Q_PROPERTY(QColor color READ getColor WRITE setColor)
+  Q_PROPERTY(int bevelSize READ getBevelSize WRITE setBevelSize)
+  Q_PROPERTY(BevelCorners bevelCorners READ getBevelCorners WRITE setBevelCorners)
 
 public:
   BeveledButton(QWidget *parent = nullptr);

@@ -2,8 +2,6 @@ CompileFlags:
     Remove:
         - -mno-direct-extern-access
     Add: 
-        - -Wall
-        - -xc++
         - -fno-direct-access-external-data
 
 Style:
