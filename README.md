@@ -63,7 +63,7 @@ If you can and want to port `tosu-overlay` to other package managers, feel free 
 
 ### 🏗️ Building from source
 
-### 📚 Build dependencies
+#### Build dependencies
 
 - meson
 - gcc
@@ -71,21 +71,21 @@ If you can and want to port `tosu-overlay` to other package managers, feel free 
 - qt6-webengine
 - layer-shell-qt
 
-### 🚀 Build
+#### Build
 
-#### Setup
+##### Setup
 
 ```sh
 meson setup build
 ```
 
-#### Compile
+##### Compile
 
 ```sh
 meson compile -C build
 ```
 
-#### Install
+##### Install
 
 ```sh
 sudo meson install -C build
