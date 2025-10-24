@@ -10,9 +10,11 @@ project(
 app_name = meson.project_name()
 add_project_arguments('-DAPPLICATION_NAME="' + app_name + '"', language: 'cpp')
 
+
 # Define application version
 app_version = vcs_tag(
-  command: ['git', 'describe'],
+  command: ['sh', 'version.sh'],
+  fallback: '1.0.0',
   input: 'include/version.h.in',
   output: 'version.h',
 )

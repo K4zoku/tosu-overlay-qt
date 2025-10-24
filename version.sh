@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+git describe --tags | sed 's/^v//;s/_/./;s/\([^-]*-g\)/r\1/;s/-/./g'
