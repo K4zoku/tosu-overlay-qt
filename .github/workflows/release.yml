@@ -23,7 +23,6 @@ jobs:
       - name: Fix permissions 🛡️
         run: |
           sudo chown -R github:github /github/home
-          sudo chown -R github:github ${{ github.workspace }}
       - name: Setup SSH 🔑
         run: |
           mkdir -p ~/.ssh
