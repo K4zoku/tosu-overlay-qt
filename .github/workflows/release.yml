@@ -22,7 +22,7 @@ jobs:
     steps:
     - name: Fix permissions 🛡️
       run: |
-        chown -R github:github /github/home
+        sudo chown -R github:github /github/home
     - name: Setup SSH 🔑 
       run: |
         mkdir -p ~/.ssh
