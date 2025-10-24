@@ -99,4 +99,4 @@ jobs:
         working-directory: ${{ steps.clone.outputs.PACKAGE_SOURCE }}
         run: |
           # Publishing to AUR...
-          #git push
+          git push
