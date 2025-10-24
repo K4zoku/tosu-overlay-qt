@@ -27,7 +27,8 @@ jobs:
         SSHKEY: ${{ secrets.SSH_PRIVATE_KEY }}
     - name: Setup SSH (2) 🔑
       run: |
-        useradd -d /github/home -g root github
+        useradd -d /github/home github
+        chown -R github:github /github/home
         su -p github -c 'ssh -v -T aur.archlinux.org help' # test connection
     - name: Set up GPG key 🔐
       run: |
