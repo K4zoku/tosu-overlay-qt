@@ -29,16 +29,23 @@ jobs:
         gpg --batch --yes --command-fd 0 --edit-key ${{ vars.GPG_KEY_ID }} trust <<< $'5\ny\n'
         git config --global user.signingkey "${{ vars.GPG_KEY_ID }}"
         git config --global commit.gpgsign true
+    - name: Setup SSH 🔑
+      uses: LuisEnMarroquin/setup-ssh-action@v3.0.0
+      with:
+        ORIGIN: aur.archlinux.org
+        SSHKEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
     - name: Define variables 📐
       id: variables
       run: |
         git config --global --add safe.directory "${GITHUB_WORKSPACE}"
-        echo "VERSION=$(git describe)" >> "$GITHUB_OUTPUT"
+        echo "VERSION=$(git describe --tags)" >> "$GITHUB_OUTPUT"
     - name: Packaging 📦
       run: |
         git clone ${{ vars.AUR_REPOSITORY }} aur
+        sed -i "s/^_tag=.*/_tag=$(git rev-parse ${{ steps.variables.outputs.VERSION }})/" aur/PKGBUILD
         cd aur
-        sed -i "s/^_tag=.*/_tag=$(git rev-parse ${{ steps.variables.outputs.VERSION }})/" PKGBUILD
         makepkg -cfs 
         git clean -dfx 
         makepkg --printsrcinfo > .SRCINFO 
