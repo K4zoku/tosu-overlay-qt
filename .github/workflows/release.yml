@@ -12,7 +12,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  bump_version:
+  aur:
     strategy:
       fail-fast: true
     runs-on: ubuntu-latest
@@ -43,6 +43,7 @@ jobs:
         echo "VERSION=$(git describe --tags)" >> "$GITHUB_OUTPUT"
     - name: Packaging 📦
       run: |
+        ssh-keyscan -t rsa aur.archlinux.org >> ~/.ssh/known_hosts
         git clone ${{ vars.AUR_REPOSITORY }} aur
         sed -i "s/^_tag=.*/_tag=$(git rev-parse ${{ steps.variables.outputs.VERSION }})/" aur/PKGBUILD
         cd aur
