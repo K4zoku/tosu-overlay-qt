@@ -91,10 +91,11 @@ jobs:
       - name: Commit changes 💾
         working-directory: ${{ steps.clone.outputs.PACKAGE_SOURCE }}
         run: |
-          # Committing changes...
-          ls -l
-          export GPG_TTY=$(tty) 
-          echo "${{ secrets.GPG_PASSPHRASE }}" | git commit -a --allow-empty -m "chore: update to version ${{ steps.variables.outputs.VERSION }}"
+          # Caching GPG
+          touch /tmp/sign.txt
+          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --sign /tmp/sign.txt
+          # Committing changes...          
+          git commit -a --allow-empty -m "chore: update to version ${{ steps.variables.outputs.VERSION }}"
       - name: Publish to AUR 🚀
         working-directory: ${{ steps.clone.outputs.PACKAGE_SOURCE }}
         run: |
