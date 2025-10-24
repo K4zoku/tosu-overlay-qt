@@ -32,8 +32,9 @@ jobs:
         chmod 600 ~/.ssh/aur
     - name: Test SSH 🔑 
       run: |
-        ssh-keygen -l -f ~/.ssh/aur # check key
-        ssh -T aur.archlinux.org help # test connection
+        # Testing SSH
+        ssh-keygen -l -f ~/.ssh/aur # Check key syntax and permissions
+        ssh aur.archlinux.org help # Test connection to AUR
     - name: Set up GPG key 🔐
       env:
         GPG_KEY_ID: ${{ vars.GPG_KEY_ID }}
@@ -46,31 +47,45 @@ jobs:
       env:
         GPG_KEY_ID: ${{ vars.GPG_KEY_ID }}
       run: |
+        # Configuring git 
+        git config --global --add safe.directory "${HOME}"
         git config --global user.name "$(gpg --list-keys ${GPG_KEY_ID} | grep 'uid' | xargs | cut -d' ' -f3)"
         git config --global user.email "$(gpg --list-keys ${GPG_KEY_ID} | grep -oP '(?<=<).*?(?=>)' | head -n 1)"
         git config --global user.signingkey "${GPG_KEY_ID}"
         git config --global commit.gpgsign true
-        git config --global --add safe.directory "${HOME}"
-    - name: Packaging 📦
+    - name: Clone AUR repo 🛒
+      working-directory: /github/home
       run: |
-        cd ${HOME}
+        # Cloning AUR repo
         git clone ${{ vars.AUR_REPOSITORY }} AUR
         cd AUR
-        makepkg --nobuild # download source
-        cd src/tosu-overlay
+        makepkg --nobuild # Download source files
+    - name: Define variables
+      id: variables
+      working-directory: /github/home/AUR/src/tosu-overlay
+      run: |
         export VERSION=$(git describe --tags)
         export TAG=$(git rev-parse "${VERSION}")
-        cd -
-        sed -i "s/^_tag=.*/_tag=${TAG}/" PKGBUILD
-        makepkg --geninteg # generate checksum
-        makepkg --printsrcinfo > .SRCINFO # generate srcinfo
+        echo "VERSION=${VERSION}" >> "${GITHUB_OUTPUT}"
+        echo "TAG=${TAG}"         >> "${GITHUB_OUTPUT}"
+    - name: Modify PKGBUILD 📝
+      working-directory: /github/home/AUR
+      run: |
+        sed -i "s/^_tag=.*/_tag=${{ steps.variables.TAG }}/" PKGBUILD
+        makepkg --geninteg # pull source and regenerate checksum
+        makepkg --printsrcinfo > .SRCINFO # regenerate srcinfo
+        git diff
+    - name: Build package 🏗️
+      working-directory: /github/home/AUR
+      run: |
         makepkg --clean --syncdeps # build test
+    - name: Commit changes 💾
+      working-directory: /github/home/AUR
+      run: |
         git add .SRCINFO PKGBUILD
         export GPG_TTY=$(tty) 
-        echo "${{ secrets.GPG_PASSPHRASE }}" | git commit -m "Update version to ${VERSION}"
-        git diff
+        echo "${{ secrets.GPG_PASSPHRASE }}" | git commit -m "Update version to ${{ steps.variables.VERSION }}"
     - name: Publish to AUR 🚀
+      working-directory: /github/home/AUR
       run: |
-        cd AUR
-        ls -l
-        echo git push here
+        #git push
