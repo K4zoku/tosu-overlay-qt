@@ -2,7 +2,22 @@ name: Build
 
 on:
   push:
-    branches: [ci-testing]
+    branches: [main]
+    paths:
+      - ".github/workflows/build.yml"
+      - "include/**/*"
+      - "res/**/*"
+      - "src/**/*"
+      - "test/**/*"
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/build.yml"
+      - "include/**/*"
+      - "res/**/*"
+      - "src/**/*"
+      - "test/**/*"
+
 
 
 concurrency:
@@ -13,9 +28,9 @@ permissions:
   contents: write
 
 jobs:
-  test:
+  build:
     strategy:
-      fail-fast: false
+      fail-fast: true
     name: Build
     runs-on: ubuntu-latest
     container:
