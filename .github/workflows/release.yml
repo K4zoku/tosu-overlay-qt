@@ -23,6 +23,7 @@ jobs:
       - name: Fix permissions 🛡️
         run: |
           sudo chown -R github:github /github/home
+          sudo chown -R github:github ${{ github.workspace }}
       - name: Setup SSH 🔑
         run: |
           mkdir -p ~/.ssh
@@ -58,6 +59,7 @@ jobs:
         working-directory: ${{ github.workspace }}
         run: |
           # Cloning AUR repo...
+          pwd
           git clone ${{ vars.AUR_REPOSITORY }} AUR
           cd AUR
           ls -al
