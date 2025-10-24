@@ -20,6 +20,13 @@ jobs:
       image: ghcr.io/k4zoku/tosu-overlay-build-ci:latest
       options: --user github
     steps:
+    - name: Checkout 🛒
+      uses: actions/checkout@v5
+      with:
+          fetch-depth: 0
+    - name: Fix permissions 🛡️
+      run: |
+        chown -R github:github /github/home
     - name: Setup SSH 🔑 
       run: |
         mkdir -p ~/.ssh
@@ -27,19 +34,16 @@ jobs:
         printf "%s" "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/aur
         chmod 644 ~/.ssh/config
         chmod 600 ~/.ssh/aur
-        
-        ssh-keygen -l -f /github/home/.ssh/aur # check key
-        ssh -v -T aur.archlinux.org help # test connection
+    - name: Test SSH 🔑 
+      run: |
+        ssh-keygen -l -f ~/.ssh/aur # check key
+        ssh -T aur.archlinux.org help # test connection
     - name: Set up GPG key 🔐        
       run: |
         echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --passphrase-fd 0 --import <(echo "${{ secrets.GPG_KEY }}")
         gpg --batch --yes --command-fd 0 --edit-key "${{ vars.GPG_KEY_ID }}" trust <<< $'5\ny\n'
         git config --global user.signingkey "${{ vars.GPG_KEY_ID }}"
         git config --global commit.gpgsign true
-    - name: Checkout 🛒
-      uses: actions/checkout@v5
-      with:
-          fetch-depth: 0
     - name: Define variables 📐
       id: variables
       run: |
