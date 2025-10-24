@@ -28,7 +28,7 @@ jobs:
         chmod 600 /github/home/.ssh/aur
         useradd -d /github/home github
         chown -R github:github /github/home
-        su -p github -c 'ssh-keygen -l -f /github/home/.ssh/access' # check key
+        su -p github -c 'ssh-keygen -l -f /github/home/.ssh/aur' # check key
         su -p github -c 'ssh -v -T aur.archlinux.org help' # test connection
     - name: Set up GPG key 🔐        
       run: |
