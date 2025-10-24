@@ -34,8 +34,6 @@ jobs:
       with:
         ORIGIN: aur.archlinux.org
         SSHKEY: ${{ secrets.SSH_PRIVATE_KEY }}
-      with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
     - name: Define variables 📐
       id: variables
       run: |
