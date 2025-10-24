@@ -38,7 +38,7 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/k4zoku/tosu-overlay-build-ci:1.0.1
+      image: ghcr.io/k4zoku/tosu-overlay-build-ci:latest
     steps:
       - name: Checkout 🛒
         uses: actions/checkout@v5
