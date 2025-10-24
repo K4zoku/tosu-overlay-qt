@@ -27,8 +27,7 @@ jobs:
         SSHKEY: ${{ secrets.SSH_PRIVATE_KEY }}
     - name: Setup SSH (2) 🔑
       run: |
-        cp -p ~/.ssh/config /root/.ssh/config
-        ssh-keyscan -H aur.archlinux.org >> ~/root/.ssh/known_hosts
+        cat ~/.ssh/config >> /etc/ssh/ssh_config
         ssh -v -T aur.archlinux.org help # test connection
     - name: Set up GPG key 🔐
       run: |
