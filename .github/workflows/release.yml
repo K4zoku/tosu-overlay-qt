@@ -33,7 +33,7 @@ jobs:
       run: |
         cat ~/.ssh/config
         echo "${{ vars.SSH_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
-        ssh -T aur.archlinux.org help # test connection
+        ssh -v -T aur.archlinux.org help # test connection
     - name: Set up GPG key 🔐
       run: |
         echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --passphrase-fd 0 --import <(echo "${{ secrets.GPG_KEY }}")
