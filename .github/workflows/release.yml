@@ -43,6 +43,8 @@ jobs:
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --passphrase-fd 0 --import <(echo "${{ secrets.GPG_KEY }}")
           # Updating GPG key trust...
           gpg --batch --yes --command-fd 0 --edit-key "${GPG_KEY_ID}" trust <<< $'5\ny\n'
+          echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf 
+          gpgconf --reload gpg-agent  
       - name: Configure git 🪾
         env:
           GPG_KEY_ID: ${{ vars.GPG_KEY_ID }}
@@ -93,7 +95,7 @@ jobs:
         run: |
           # Caching GPG
           touch /tmp/sign.txt
-          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --sign /tmp/sign.txt
+          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --pinentry-mode loopback --batch --passphrase-fd 0 --sign /tmp/sign.txt
           # Committing changes...          
           git commit -a --allow-empty -m "chore: update to version ${{ steps.variables.outputs.VERSION }}"
       - name: Publish to AUR 🚀
