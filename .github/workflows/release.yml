@@ -20,10 +20,6 @@ jobs:
       image: ghcr.io/k4zoku/tosu-overlay-build-ci:latest
       options: --user github
     steps:
-    - name: Checkout 🛒
-      uses: actions/checkout@v5
-      with:
-          fetch-depth: 0
     - name: Fix permissions 🛡️
       run: |
         chown -R github:github /github/home
@@ -38,28 +34,32 @@ jobs:
       run: |
         ssh-keygen -l -f ~/.ssh/aur # check key
         ssh -T aur.archlinux.org help # test connection
-    - name: Set up GPG key 🔐        
+    - name: Set up GPG key 🔐
+      env:
+        GPG_KEY_ID: ${{ vars.GPG_KEY_ID }}
       run: |
         echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --passphrase-fd 0 --import <(echo "${{ secrets.GPG_KEY }}")
-        gpg --batch --yes --command-fd 0 --edit-key "${{ vars.GPG_KEY_ID }}" trust <<< $'5\ny\n'
-        git config --global user.signingkey "${{ vars.GPG_KEY_ID }}"
+        gpg --batch --yes --command-fd 0 --edit-key "${GPG_KEY_ID}" trust <<< $'5\ny\n'
+        git config --global user.name "${{ github.actor }}"
+        git config --global user.email "$(gpg --list-keys ${GPG_KEY_ID} | grep -oP '(?<=<).*?(?=>)' | head -n 1)"
+        git config --global user.signingkey "${GPG_KEY_ID}"
         git config --global commit.gpgsign true
-    - name: Define variables 📐
-      id: variables
-      run: |
-        git config --global --add safe.directory "${GITHUB_WORKSPACE}"
-        echo "VERSION=$(git describe --tags)" >> "$GITHUB_OUTPUT"
-        echo "HASH=$(git rev-parse $(git describe --tags))" >> "$GITHUB_OUTPUT"
     - name: Packaging 📦
       run: |
+        git config --global --add safe.directory "${HOME}"
         git clone ${{ vars.AUR_REPOSITORY }} AUR
-        sed -i "s/^_tag=.*/_tag=${{ steps.variables.outputs.HASH }}/" AUR/PKGBUILD
         cd AUR
-        makepkg -cfs
-        git clean -dfx
-        makepkg --printsrcinfo > .SRCINFO
+        makepkg --verifysource # download source
+        cd src/tosu-overlay
+        export VERSION=$(git describe --tags)
+        export TAG=$(git rev-parse "${VERSION}")
+        cd -
+        sed -i "s/^_tag=.*/_tag=${TAG}/" PKGBUILD
+        makepkg --geninteg # generate checksum
+        makepkg --printsrcinfo > .SRCINFO # generate srcinfo
+        makepkg --clean --syncdeps # build test
         git add .SRCINFO PKGBUILD
-        git commit -S -m "Update version to ${{ steps.variables.outputs.VERSION }}"
+        git commit -m "Update version to ${VERSION}"
         git diff
     - name: Publish to AUR 🚀
       run: |
