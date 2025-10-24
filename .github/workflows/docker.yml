@@ -2,7 +2,7 @@ on:
   push:
     branches: [ci-testing]
     paths:
-      - ".github/workflows/build-docker.yml"
+      - ".github/workflows/docker.yml"
       - ".github/Dockerfile"
 
 permissions:
