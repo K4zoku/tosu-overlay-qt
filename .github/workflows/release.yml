@@ -32,12 +32,12 @@ jobs:
         SSHKEY: ${{ secrets.SSH_PRIVATE_KEY }}
     - name: Setup SSH (2) 🔑
       run: |
-        echo ${{ vars.SSH_KNOWN_HOSTS }} >> ~/.ssh/known_hosts
+        echo "${{ vars.SSH_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
         ssh aur@aur.archlinux.org help # test connection
     - name: Set up GPG key 🔐
       run: |
         echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --passphrase-fd 0 --import <(echo "${{ secrets.GPG_KEY }}")
-        gpg --batch --yes --command-fd 0 --edit-key ${{ vars.GPG_KEY_ID }} trust <<< $'5\ny\n'
+        gpg --batch --yes --command-fd 0 --edit-key "${{ vars.GPG_KEY_ID }}" trust <<< $'5\ny\n'
         git config --global user.signingkey "${{ vars.GPG_KEY_ID }}"
         git config --global commit.gpgsign true
     - name: Define variables 📐
