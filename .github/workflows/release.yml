@@ -22,8 +22,11 @@ jobs:
     steps:
     - name: Setup SSH 🔑 
       run: |
-        printf "%s" "${{ secrets.SSH_PRIVATE_KEY }}" > /github/home/.ssh/aur
-        chmod 600 /github/home/.ssh/aur
+        mkdir -p ~/.ssh
+        printf "Host aur.archlinux.org\n  HostName aur.archlinux.org\n  User aur\n  IdentityFile /github/home/.ssh/aur\n  StrictHostKeyChecking no\n  UserKnownHostsFile /dev/null" > ~/.ssh/config
+        printf "%s" "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/aur
+        chmod 644 ~/.ssh/config
+        chmod 600 ~/.ssh/aur
         
         ssh-keygen -l -f /github/home/.ssh/aur # check key
         ssh -v -T aur.archlinux.org help # test connection
