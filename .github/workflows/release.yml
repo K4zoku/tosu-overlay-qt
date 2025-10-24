@@ -20,72 +20,77 @@ jobs:
       image: ghcr.io/k4zoku/tosu-overlay-build-ci:latest
       options: --user github
     steps:
-    - name: Fix permissions 🛡️
-      run: |
-        sudo chown -R github:github /github/home
-    - name: Setup SSH 🔑 
-      run: |
-        mkdir -p ~/.ssh
-        printf "Host aur.archlinux.org\n  HostName aur.archlinux.org\n  User aur\n  IdentityFile /github/home/.ssh/aur\n  StrictHostKeyChecking no\n  UserKnownHostsFile /dev/null" > ~/.ssh/config
-        printf "%s" "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/aur
-        chmod 644 ~/.ssh/config
-        chmod 600 ~/.ssh/aur
-    - name: Test SSH 🔑 
-      run: |
-        # Testing SSH
-        ssh-keygen -l -f ~/.ssh/aur # Check key syntax and permissions
-        ssh aur.archlinux.org help # Test connection to AUR
-    - name: Set up GPG key 🔐
-      env:
-        GPG_KEY_ID: ${{ vars.GPG_KEY_ID }}
-      run: |
-        # Importing GPG key
-        echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --passphrase-fd 0 --import <(echo "${{ secrets.GPG_KEY }}")
-        # Changing GPG key trust...
-        gpg --batch --yes --command-fd 0 --edit-key "${GPG_KEY_ID}" trust <<< $'5\ny\n'
-    - name: Configure git 🔧
-      env:
-        GPG_KEY_ID: ${{ vars.GPG_KEY_ID }}
-      run: |
-        # Configuring git 
-        git config --global --add safe.directory "${HOME}"
-        git config --global user.name "$(gpg --list-keys ${GPG_KEY_ID} | grep 'uid' | xargs | cut -d' ' -f3)"
-        git config --global user.email "$(gpg --list-keys ${GPG_KEY_ID} | grep -oP '(?<=<).*?(?=>)' | head -n 1)"
-        git config --global user.signingkey "${GPG_KEY_ID}"
-        git config --global commit.gpgsign true
-    - name: Clone AUR repo 🛒
-      working-directory: /github/home
-      run: |
-        # Cloning AUR repo
-        git clone ${{ vars.AUR_REPOSITORY }} AUR
-        cd AUR
-        makepkg --nobuild # Download source files
-    - name: Define variables
-      id: variables
-      working-directory: /github/home/AUR/src/tosu-overlay
-      run: |
-        export VERSION=$(git describe --tags)
-        export TAG=$(git rev-parse "${VERSION}")
-        echo "VERSION=${VERSION}" >> "${GITHUB_OUTPUT}"
-        echo "TAG=${TAG}"         >> "${GITHUB_OUTPUT}"
-    - name: Modify PKGBUILD 📝
-      working-directory: /github/home/AUR
-      run: |
-        sed -i "s/^_tag=.*/_tag=${{ steps.variables.TAG }}/" PKGBUILD
-        makepkg --geninteg # pull source and regenerate checksum
-        makepkg --printsrcinfo > .SRCINFO # regenerate srcinfo
-        git diff
-    - name: Build package 🏗️
-      working-directory: /github/home/AUR
-      run: |
-        makepkg --clean --syncdeps # build test
-    - name: Commit changes 💾
-      working-directory: /github/home/AUR
-      run: |
-        git add .SRCINFO PKGBUILD
-        export GPG_TTY=$(tty) 
-        echo "${{ secrets.GPG_PASSPHRASE }}" | git commit -m "Update version to ${{ steps.variables.VERSION }}"
-    - name: Publish to AUR 🚀
-      working-directory: /github/home/AUR
-      run: |
-        #git push
+      - name: Fix permissions 🛡️
+        run: |
+          sudo chown -R github:github /github/home
+      - name: Setup SSH 🔑
+        run: |
+          mkdir -p ~/.ssh
+          printf "Host aur.archlinux.org\n  HostName aur.archlinux.org\n  User aur\n  IdentityFile /github/home/.ssh/aur\n  StrictHostKeyChecking no\n  UserKnownHostsFile /dev/null" > ~/.ssh/config
+          printf "%s" "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/aur
+          chmod 644 ~/.ssh/config
+          chmod 600 ~/.ssh/aur
+      - name: Test SSH 🔑
+        run: |
+          # Testing SSH
+          ssh-keygen -l -f ~/.ssh/aur # Check key syntax and permissions
+          ssh aur.archlinux.org help # Test connection to AUR
+      - name: Set up GPG key 🔐
+        env:
+          GPG_KEY_ID: ${{ vars.GPG_KEY_ID }}
+        run: |
+          # Importing GPG key
+          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --passphrase-fd 0 --import <(echo "${{ secrets.GPG_KEY }}")
+          # Changing GPG key trust...
+          gpg --batch --yes --command-fd 0 --edit-key "${GPG_KEY_ID}" trust <<< $'5\ny\n'
+      - name: Configure git 🔧
+        env:
+          GPG_KEY_ID: ${{ vars.GPG_KEY_ID }}
+        run: |
+          # Configuring git...
+          git config --global --add safe.directory "${HOME}"
+          git config --global user.name "$(gpg --list-keys ${GPG_KEY_ID} | grep 'uid' | xargs | cut -d' ' -f3)"
+          git config --global user.email "$(gpg --list-keys ${GPG_KEY_ID} | grep -oP '(?<=<).*?(?=>)' | head -n 1)"
+          git config --global user.signingkey "${GPG_KEY_ID}"
+          git config --global commit.gpgsign true
+      - name: Clone AUR repo 🛒
+        working-directory: /github/home
+        run: |
+          # Cloning AUR repo...
+          git clone ${{ vars.AUR_REPOSITORY }} AUR
+          cd AUR
+          makepkg --nobuild # Download source files
+      - name: Define variables
+        id: variables
+        working-directory: /github/home/AUR/src/tosu-overlay
+        run: |
+          # Defining variables...
+          export VERSION=$(git describe --tags)
+          export TAG=$(git rev-parse "${VERSION}")
+          echo "VERSION=${VERSION}" | sudo tee --append "${GITHUB_OUTPUT}"
+          echo "TAG=${TAG}"         | sudo tee --append "${GITHUB_OUTPUT}"
+      - name: Modify PKGBUILD 📝
+        working-directory: /github/home/AUR
+        run: |
+          # Modifying PKGBUILD...
+          sed -i "s/^_tag=.*/_tag=${{ steps.variables.TAG }}/" PKGBUILD
+          makepkg --geninteg # pull source and regenerate checksum
+          makepkg --printsrcinfo > .SRCINFO # regenerate srcinfo
+          git diff
+      - name: Build package 🏗️
+        working-directory: /github/home/AUR
+        run: |
+          # Building package...
+          makepkg --clean --syncdeps
+      - name: Commit changes 💾
+        working-directory: /github/home/AUR
+        run: |
+          # Committing changes...
+          git add .SRCINFO PKGBUILD
+          export GPG_TTY=$(tty) 
+          echo "${{ secrets.GPG_PASSPHRASE }}" | git commit -m "Update version to ${{ steps.variables.VERSION }}"
+      - name: Publish to AUR 🚀
+        working-directory: /github/home/AUR
+        run: |
+          # Publishing to AUR...
+          #git push
