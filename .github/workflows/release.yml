@@ -1,0 +1,50 @@
+name: Release
+
+on:
+  push:
+    # tags: ['v*']
+    branches: [ci-testing]
+
+concurrency:
+  group: publish-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  bump_version:
+    strategy:
+      fail-fast: true
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/k4zoku/tosu-overlay-build-ci:1.0.1
+    steps:
+    - name: Checkout 🛒
+      uses: actions/checkout@v5
+      with:
+          fetch-depth: 0
+    - name: Set up GPG key 🔐
+      run: |
+        echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --passphrase-fd 0 --import <(echo "${{ secrets.GPG_KEY }}")
+        gpg --batch --yes --command-fd 0 --edit-key ${{ vars.GPG_KEY_ID }} trust <<< $'5\ny\n'
+        git config --global user.signingkey "${{ vars.GPG_KEY_ID }}"
+        git config --global commit.gpgsign true
+    - name: Define variables 📐
+      id: variables
+      run: |
+        git config --global --add safe.directory "${GITHUB_WORKSPACE}"
+        echo "VERSION=$(git describe)" >> "$GITHUB_OUTPUT"
+    - name: Packaging 📦
+      run: |
+        git clone ${{ vars.AUR_REPOSITORY }} aur
+        cd aur
+        sed -i "s/^_tag=.*/_tag=$(git rev-parse ${{ steps.variables.outputs.VERSION }})/" PKGBUILD
+        makepkg -cfs 
+        git clean -dfx 
+        makepkg --printsrcinfo > .SRCINFO 
+        git add .SRCINFO PKGBUILD
+        git commit -S -m "Update version to ${{ steps.variables.outputs.VERSION }}"
+        git diff
+    - name: Publish to AUR 🚀
+      run: |
+        cd aur
+        ls -l
+        echo git push here
