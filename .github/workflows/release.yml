@@ -27,13 +27,13 @@ jobs:
       uses: LuisEnMarroquin/setup-ssh-action@v3.0.0
       with:
         ORIGIN: aur.archlinux.org
-        NAME: aur
         USER: aur
         SSHKEY: ${{ secrets.SSH_PRIVATE_KEY }}
     - name: Setup SSH (2) 🔑
       run: |
+        cat ~/.ssh/config
         echo "${{ vars.SSH_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
-        ssh aur@aur.archlinux.org help # test connection
+        ssh -T aur.archlinux.org help # test connection
     - name: Set up GPG key 🔐
       run: |
         echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --passphrase-fd 0 --import <(echo "${{ secrets.GPG_KEY }}")
