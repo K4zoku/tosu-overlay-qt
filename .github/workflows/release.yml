@@ -27,8 +27,7 @@ jobs:
         SSHKEY: ${{ secrets.SSH_PRIVATE_KEY }}
     - name: Setup SSH (2) 🔑
       run: |
-        export HOME=$(realpath ~)
-        ssh -v -T aur.archlinux.org help # test connection
+        env HOME=$(realpath ~) ssh -v -T aur.archlinux.org help # test connection
     - name: Set up GPG key 🔐
       run: |
         echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --passphrase-fd 0 --import <(echo "${{ secrets.GPG_KEY }}")
