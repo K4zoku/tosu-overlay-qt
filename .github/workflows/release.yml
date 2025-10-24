@@ -19,10 +19,6 @@ jobs:
     container:
       image: ghcr.io/k4zoku/tosu-overlay-build-ci:latest
     steps:
-    - name: Checkout 🛒
-      uses: actions/checkout@v5
-      with:
-          fetch-depth: 0
     - name: Setup SSH 🔑
       uses: LuisEnMarroquin/setup-ssh-action@v3.0.0
       with:
@@ -31,8 +27,8 @@ jobs:
         SSHKEY: ${{ secrets.SSH_PRIVATE_KEY }}
     - name: Setup SSH (2) 🔑
       run: |
-        cat ~/.ssh/config
-        echo "${{ vars.SSH_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
+        cp -p ~/.ssh/config /root/.ssh/config
+        ssh-keyscan -H aur.archlinux.org >> ~/root/.ssh/known_hosts
         ssh -v -T aur.archlinux.org help # test connection
     - name: Set up GPG key 🔐
       run: |
@@ -40,6 +36,10 @@ jobs:
         gpg --batch --yes --command-fd 0 --edit-key "${{ vars.GPG_KEY_ID }}" trust <<< $'5\ny\n'
         git config --global user.signingkey "${{ vars.GPG_KEY_ID }}"
         git config --global commit.gpgsign true
+    - name: Checkout 🛒
+      uses: actions/checkout@v5
+      with:
+          fetch-depth: 0
     - name: Define variables 📐
       id: variables
       run: |
