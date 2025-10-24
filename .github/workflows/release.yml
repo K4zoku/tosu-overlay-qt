@@ -33,6 +33,8 @@ jobs:
       uses: LuisEnMarroquin/setup-ssh-action@v3.0.0
       with:
         ORIGIN: aur.archlinux.org
+        NAME: aur
+        USER: aur
         SSHKEY: ${{ secrets.SSH_PRIVATE_KEY }}
     - name: Define variables 📐
       id: variables
