@@ -2,19 +2,8 @@ name: Build
 
 on:
   push:
-    branches: [main]
-    paths:
-      - ".github/workflows/build.yml"
-      - "include/**/*"
-      - "src/**/*"
-      - "test/**/*"
-  pull_request:
-    branches: [main]
-    paths:
-      - ".github/workflows/build.yml"
-      - "include/**/*"
-      - "src/**/*"
-      - "test/**/*"
+    branches: [ci-testing]
+
 
 concurrency:
   group: build-${{ github.ref_name }}
@@ -28,20 +17,17 @@ jobs:
     strategy:
       fail-fast: false
     name: Build
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/k4zoku/tosu-overlay-build-ci:latest
     steps:
       - name: Checkout 🛒
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - name: Intall dependencies 📥
-        uses: awalsh128/cache-apt-pkgs-action@latest
-        with:
-          packages: meson qtbase5-dev qtwebengine5-dev liblayershellqtinterface-dev
-          version: 1.0
       - name: Build 🏗️
         run: |
-          meson setup build -Duse_qt6=false
+          meson setup build
           meson compile -C build
       - name: Define variables 📐
         id: set-pr-sha
