@@ -38,15 +38,22 @@ jobs:
       env:
         GPG_KEY_ID: ${{ vars.GPG_KEY_ID }}
       run: |
+        # Importing GPG key
         echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --passphrase-fd 0 --import <(echo "${{ secrets.GPG_KEY }}")
+        # Changing GPG key trust...
         gpg --batch --yes --command-fd 0 --edit-key "${GPG_KEY_ID}" trust <<< $'5\ny\n'
+    - name: Configure git 🔧
+      env:
+        GPG_KEY_ID: ${{ vars.GPG_KEY_ID }}
+      run: |
         git config --global user.name "${{ github.actor }}"
         git config --global user.email "$(gpg --list-keys ${GPG_KEY_ID} | grep -oP '(?<=<).*?(?=>)' | head -n 1)"
         git config --global user.signingkey "${GPG_KEY_ID}"
         git config --global commit.gpgsign true
+        git config --global --add safe.directory "${HOME}"
     - name: Packaging 📦
       run: |
-        git config --global --add safe.directory "${HOME}"
+        cd ${HOME}
         git clone ${{ vars.AUR_REPOSITORY }} AUR
         cd AUR
         makepkg --verifysource # download source
