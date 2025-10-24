@@ -55,13 +55,14 @@ jobs:
           git config --global commit.gpgsign true
       - name: Clone AUR repo 🛒
         id: clone
-        working-directory: /github/home
+        working-directory: ${{ github.workspace }}
         run: |
           # Cloning AUR repo...
           git clone ${{ vars.AUR_REPOSITORY }} AUR
           cd AUR
-          source PKGBUILD
+          ls -al
           makepkg --nobuild # Download source files
+          source PKGBUILD
           echo "PACKAGE_SOURCE=$PWD" | sudo tee --append "${GITHUB_OUTPUT}"
           echo "SOURCE=$PWD/src/$_pkgbase" | sudo tee --append "${GITHUB_OUTPUT}"
       - name: Define variables 📐
