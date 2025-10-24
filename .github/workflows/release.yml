@@ -44,6 +44,7 @@ jobs:
     - name: Packaging 📦
       run: |
         ssh-keyscan -t rsa aur.archlinux.org >> ~/.ssh/known_hosts
+        ssh aur@aur.archlinux.org help # test connection
         git clone ${{ vars.AUR_REPOSITORY }} aur
         sed -i "s/^_tag=.*/_tag=$(git rev-parse ${{ steps.variables.outputs.VERSION }})/" aur/PKGBUILD
         cd aur
