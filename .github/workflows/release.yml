@@ -4,6 +4,8 @@ on:
   push:
     # tags: ['v*']
     branches: [ci-testing]
+    paths:
+      - ".github/workflows/release.yml"
 
 concurrency:
   group: publish-${{ github.ref_name }}
