@@ -28,9 +28,8 @@ jobs:
         chmod 600 /github/home/.ssh/aur
         useradd -d /github/home github
         chown -R github:github /github/home
-        su -p github
-        ssh-keygen -l -f /github/home/.ssh/aur # check key
-        ssh -v -T aur.archlinux.org help # test connection
+        su -p github -c 'ssh-keygen -l -f /github/home/.ssh/aur' # check key
+        su -p github -c 'ssh -v -T aur.archlinux.org help' # test connection
     - name: Set up GPG key 🔐        
       run: |
         echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --passphrase-fd 0 --import <(echo "${{ secrets.GPG_KEY }}")
@@ -51,15 +50,15 @@ jobs:
       run: |
         chown -R github:github .
         su -p github 
-        git clone ${{ vars.AUR_REPOSITORY }} AUR
-        sed -i "s/^_tag=.*/_tag=${{ steps.variables.outputs.HASH }}/" AUR/PKGBUILD
+        su -p github -c 'git clone ${{ vars.AUR_REPOSITORY }} AUR'
+        su -p github -c  'sed -i "s/^_tag=.*/_tag=${{ steps.variables.outputs.HASH }}/" AUR/PKGBUILD'
         cd AUR
-        makepkg -cfs 
-        git clean -dfx 
-        makepkg --printsrcinfo > .SRCINFO 
-        git add .SRCINFO PKGBUILD
-        git commit -S -m "Update version to ${{ steps.variables.outputs.VERSION }}"
-        git diff
+        su -p github -c 'makepkg -cfs'
+        su -p github -c 'git clean -dfx'
+        su -p github -c 'makepkg --printsrcinfo > .SRCINFO'
+        su -p github -c 'git add .SRCINFO PKGBUILD'
+        su -p github -c 'git commit -S -m "Update version to ${{ steps.variables.outputs.VERSION }}"'
+        su -p github -c 'git diff'
     - name: Publish to AUR 🚀
       run: |
         cd AUR
