@@ -9,6 +9,8 @@ on:
       - "res/**/*"
       - "src/**/*"
       - "test/**/*"
+      - "meson.build"
+      - "meson.options"
   pull_request:
     branches: [main]
     paths:
@@ -17,6 +19,8 @@ on:
       - "res/**/*"
       - "src/**/*"
       - "test/**/*"
+      - "meson.build"
+      - "meson.options"
 
 
 
