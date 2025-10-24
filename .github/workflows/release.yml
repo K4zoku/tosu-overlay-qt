@@ -18,18 +18,15 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/k4zoku/tosu-overlay-build-ci:latest
+      options: --user github
     steps:
     - name: Setup SSH 🔑 
       run: |
-        mkdir -p /github/home/.ssh
-        printf "Host aur.archlinux.org\n  HostName aur.archlinux.org\n  User aur\n  IdentityFile /github/home/.ssh/aur\n  StrictHostKeyChecking no\n  UserKnownHostsFile /dev/null" > /github/home/.ssh/config
         printf "%s" "${{ secrets.SSH_PRIVATE_KEY }}" > /github/home/.ssh/aur
-        chmod 644 /github/home/.ssh/config
         chmod 600 /github/home/.ssh/aur
-        useradd -d /github/home github
-        chown -R github:github /github/home
-        su -p github -c 'ssh-keygen -l -f /github/home/.ssh/aur' # check key
-        su -p github -c 'ssh -v -T aur.archlinux.org help' # test connection
+        
+        ssh-keygen -l -f /github/home/.ssh/aur # check key
+        ssh -v -T aur.archlinux.org help # test connection
     - name: Set up GPG key 🔐        
       run: |
         echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --passphrase-fd 0 --import <(echo "${{ secrets.GPG_KEY }}")
@@ -48,17 +45,15 @@ jobs:
         echo "HASH=$(git rev-parse $(git describe --tags))" >> "$GITHUB_OUTPUT"
     - name: Packaging 📦
       run: |
-        chown -R github:github .
-        su -p github 
-        su -p github -c 'git clone ${{ vars.AUR_REPOSITORY }} AUR'
-        su -p github -c  'sed -i "s/^_tag=.*/_tag=${{ steps.variables.outputs.HASH }}/" AUR/PKGBUILD'
+        git clone ${{ vars.AUR_REPOSITORY }} AUR
+        sed -i "s/^_tag=.*/_tag=${{ steps.variables.outputs.HASH }}/" AUR/PKGBUILD
         cd AUR
-        su -p github -c 'makepkg -cfs'
-        su -p github -c 'git clean -dfx'
-        su -p github -c 'makepkg --printsrcinfo > .SRCINFO'
-        su -p github -c 'git add .SRCINFO PKGBUILD'
-        su -p github -c 'git commit -S -m "Update version to ${{ steps.variables.outputs.VERSION }}"'
-        su -p github -c 'git diff'
+        makepkg -cfs
+        git clean -dfx
+        makepkg --printsrcinfo > .SRCINFO
+        git add .SRCINFO PKGBUILD
+        git commit -S -m "Update version to ${{ steps.variables.outputs.VERSION }}"
+        git diff
     - name: Publish to AUR 🚀
       run: |
         cd AUR
