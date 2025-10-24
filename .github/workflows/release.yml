@@ -36,18 +36,21 @@ jobs:
         NAME: aur
         USER: aur
         SSHKEY: ${{ secrets.SSH_PRIVATE_KEY }}
+    - name: Setup SSH (2) 🔑
+      run: |
+        ssh-keyscan aur.archlinux.org >> ~/.ssh/known_hosts
+        ssh aur@aur.archlinux.org help # test connection
     - name: Define variables 📐
       id: variables
       run: |
         git config --global --add safe.directory "${GITHUB_WORKSPACE}"
         echo "VERSION=$(git describe --tags)" >> "$GITHUB_OUTPUT"
+        echo "HASH=$(git rev-parse $(git describe --tags))" >> "$GITHUB_OUTPUT"
     - name: Packaging 📦
       run: |
-        ssh-keyscan -t rsa aur.archlinux.org >> ~/.ssh/known_hosts
-        ssh aur@aur.archlinux.org help # test connection
-        git clone ${{ vars.AUR_REPOSITORY }} aur
-        sed -i "s/^_tag=.*/_tag=$(git rev-parse ${{ steps.variables.outputs.VERSION }})/" aur/PKGBUILD
-        cd aur
+        git clone ${{ vars.AUR_REPOSITORY }} AUR
+        sed -i "s/^_tag=.*/_tag=${{ steps.variables.outputs.HASH }}/" AUR/PKGBUILD
+        cd AUR
         makepkg -cfs 
         git clean -dfx 
         makepkg --printsrcinfo > .SRCINFO 
@@ -56,6 +59,6 @@ jobs:
         git diff
     - name: Publish to AUR 🚀
       run: |
-        cd aur
+        cd AUR
         ls -l
         echo git push here
