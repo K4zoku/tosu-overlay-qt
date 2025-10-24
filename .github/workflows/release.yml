@@ -27,7 +27,7 @@ jobs:
         SSHKEY: ${{ secrets.SSH_PRIVATE_KEY }}
     - name: Setup SSH (2) 🔑
       run: |
-        printf "%s" ${{ secrets.SSH_PRIVATE_KEY }} > /github/home/.ssh/access
+        printf "%s" "${{ secrets.SSH_PRIVATE_KEY }}" > /github/home/.ssh/access
         chmod 600 /github/home/.ssh/access
         useradd -d /github/home github
         chown -R github:github /github/home
