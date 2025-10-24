@@ -22,7 +22,7 @@ jobs:
       image: ghcr.io/k4zoku/tosu-overlay-build-ci:1.0.1
     steps:
       - name: Checkout 🛒
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - name: Build 🏗️
@@ -32,7 +32,9 @@ jobs:
       - name: Define variables 📐
         id: set-pr-sha
         shell: bash
-        run: echo "VERSION=$(git describe --tags | sed 's/^v//;s/_/./;s/\([^-]*-g\)/r\1/;s/-/./g')" >> "$GITHUB_OUTPUT"
+        run: |
+          git config --global --add safe.directory "${GITHUB_WORKSPACE}"
+          echo "VERSION=$(git describe --tags | sed 's/^v//;s/_/./;s/\([^-]*-g\)/r\1/;s/-/./g')" >> "$GITHUB_OUTPUT"
       - name: Upload artifacts 🚀
         uses: actions/upload-artifact@v4
         with: {
