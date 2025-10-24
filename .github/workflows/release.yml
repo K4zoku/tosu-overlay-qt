@@ -94,7 +94,7 @@ jobs:
           # Committing changes...
           ls -l
           export GPG_TTY=$(tty) 
-          echo "${{ secrets.GPG_PASSPHRASE }}" | git commit -a -m --allow-empty "chore: update to version ${{ steps.variables.outputs.VERSION }}"
+          echo "${{ secrets.GPG_PASSPHRASE }}" | git commit -a --allow-empty -m "chore: update to version ${{ steps.variables.outputs.VERSION }}"
       - name: Publish to AUR 🚀
         working-directory: ${{ steps.clone.outputs.PACKAGE_SOURCE }}
         run: |
