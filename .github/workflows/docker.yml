@@ -28,6 +28,7 @@ jobs:
           dockerfile: ./.github/Dockerfile
           image-name: tosu-overlay-build-ci
           tags: latest
+          push-branches: main ci-testing
         env:
           REGISTRY_USERNAME: ${{ github.actor }}
           REGISTRY_TOKEN: ${{ github.token }}
