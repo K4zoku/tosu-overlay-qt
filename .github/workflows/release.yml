@@ -27,8 +27,7 @@ jobs:
         SSHKEY: ${{ secrets.SSH_PRIVATE_KEY }}
     - name: Setup SSH (2) 🔑
       run: |
-        sed -i 's/\r//' ~/.ssh/access
-        cat ~/.ssh/config >> /etc/ssh/ssh_config
+        export HOME=$(realpath ~)
         ssh -v -T aur.archlinux.org help # test connection
     - name: Set up GPG key 🔐
       run: |
