@@ -73,7 +73,7 @@ jobs:
         working-directory: /github/home/AUR
         run: |
           # Modifying PKGBUILD...
-          sed -i "s/^_tag=.*/_tag=${{ steps.variables.TAG }}/" PKGBUILD
+          sed -i "s/^_tag=.*/_tag=${{ steps.variables.outputs.TAG }}/" PKGBUILD
           makepkg --geninteg # pull source and regenerate checksum
           makepkg --printsrcinfo > .SRCINFO # regenerate srcinfo
           git diff
@@ -88,7 +88,7 @@ jobs:
           # Committing changes...
           git add .SRCINFO PKGBUILD
           export GPG_TTY=$(tty) 
-          echo "${{ secrets.GPG_PASSPHRASE }}" | git commit -m "Update version to ${{ steps.variables.VERSION }}"
+          echo "${{ secrets.GPG_PASSPHRASE }}" | git commit -m "Update version to ${{ steps.variables.outputs.VERSION }}"
       - name: Publish to AUR 🚀
         working-directory: /github/home/AUR
         run: |
