@@ -7,9 +7,6 @@ on:
       - ".github/workflows/docker.yml"
       - ".github/Dockerfile"
 
-permissions:
-  packages: write
-
 concurrency:
   group: docker-${{ github.ref_name }}
   cancel-in-progress: true
