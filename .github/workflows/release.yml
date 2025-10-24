@@ -29,6 +29,7 @@ jobs:
       run: |
         useradd -d /github/home github
         chown -R github:github /github/home
+        su -p github -c 'ssh-keygen -l -f /github/home/.ssh/access' # check key
         su -p github -c 'ssh -v -T aur.archlinux.org help' # test connection
     - name: Set up GPG key 🔐
       run: |
@@ -48,7 +49,7 @@ jobs:
         echo "HASH=$(git rev-parse $(git describe --tags))" >> "$GITHUB_OUTPUT"
     - name: Packaging 📦
       run: |
-        git clone ${{ vars.AUR_REPOSITORY }} AUR
+        su -p github -c 'git clone ${{ vars.AUR_REPOSITORY }} AUR'
         sed -i "s/^_tag=.*/_tag=${{ steps.variables.outputs.HASH }}/" AUR/PKGBUILD
         cd AUR
         makepkg -cfs 
