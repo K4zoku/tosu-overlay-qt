@@ -1,3 +1,5 @@
+name: Build and publish CI Docker image
+
 on:
   push:
     branches: [ci-testing]
@@ -8,16 +10,26 @@ on:
 permissions:
   packages: write
 
+concurrency:
+  group: docker-${{ github.ref_name }}
+  cancel-in-progress: true
+
 jobs:
   docker:
-    - name: Build Docker Images
-      uses: philips-software/docker-ci-scripts@v4.5.0
-      with:
-        dockerfile: ./.github/Dockerfile
-        image-name: tosu-overlay-build-ci
-        tags: latest
-      env:
-        REGISTRY_USERNAME: ${{ github.actor }}
-        REGISTRY_TOKEN: ${{ github.token }}
-        REGISTRY_URL: ghcr.io/k4zoku
-        GITHUB_ORGANIZATION: k4zoku
+    strategy:
+      fail-fast: true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛒
+        uses: actions/checkout@v5
+      - name: Build Docker Images
+        uses: philips-software/docker-ci-scripts@v4.5.0
+        with:
+          dockerfile: ./.github/Dockerfile
+          image-name: tosu-overlay-build-ci
+          tags: latest
+        env:
+          REGISTRY_USERNAME: ${{ github.actor }}
+          REGISTRY_TOKEN: ${{ github.token }}
+          REGISTRY_URL: ghcr.io/k4zoku
+          GITHUB_ORGANIZATION: k4zoku
