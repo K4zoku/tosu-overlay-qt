@@ -33,7 +33,7 @@ public:
 
 private:
   void javaScriptConsoleMessage(QWebEnginePage::JavaScriptConsoleMessageLevel level, const QString &message,
-                                int lineNumber, const QString &sourceID);
+                                int lineNumber, const QString &sourceID) override;
 };
 
 class WebChannelObject : public QObject {

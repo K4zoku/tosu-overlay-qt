@@ -1,10 +1,11 @@
 #include "webview.h"
 #include "beveledbutton.h"
-#include "qmargins.h"
 
 #include <LayerShellQt/Window>
 #include <QApplication>
+#include <QDesktopServices>
 #include <QFile>
+#include <QMargins>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QScreen>
@@ -14,8 +15,9 @@
 #include <QWebChannel>
 
 WebView::WebView(QWidget *parent, const QUrl baseUrl) : QWebEngineView{parent} {
-  this->setPage(new WebPage(this));
-  this->setTosuBaseUrl(baseUrl);
+  setPage(new WebPage(this));
+  setTosuBaseUrl(baseUrl);
+  setContextMenuPolicy(Qt::ContextMenuPolicy::NoContextMenu);
   connect(this->page(), SIGNAL(loadFinished(bool)), this, SLOT(onLoaded(bool)));
 }
 
