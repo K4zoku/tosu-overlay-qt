@@ -13,7 +13,7 @@ add_project_arguments('-DAPPLICATION_NAME="' + app_name + '"', language: 'cpp')
 
 # Define application version
 app_version = vcs_tag(
-  command: ['sh', 'version.sh'],
+  command: ['script/version'],
   fallback: '1.0.0',
   input: 'include/version.h.in',
   output: 'version.h',
