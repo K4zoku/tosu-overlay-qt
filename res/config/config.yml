@@ -1,0 +1,14 @@
+tosu:
+  url: http://127.0.0.1:24050
+  type: external
+  internal:
+    privileged: false
+    executable: /usr/bin/tosu
+    arguments: []
+    working-directory: /opt/tosu
+    auto-url: false
+
+overlay:
+  monitor: 0
+  attach: false
+  start-hidden: false
