@@ -1,14 +1,8 @@
 # Tosu Overlay Linux
 
-<a href="https://github.com/K4zoku/tosu-overlay-qt/actions/workflows/build.yml">
-  <img src="https://img.shields.io/github/actions/workflow/status/k4zoku/tosu-overlay-qt/build.yml?style=for-the-badge" alt="GitHub Actions Workflow Status">
-</a>
-<a href="github.com/K4zoku/tosu-overlay-qt/releases/latest">
-  <img src="https://img.shields.io/github/v/release/k4zoku/tosu-overlay-qt?style=for-the-badge" alt="GitHub Release">
-</a>
-<a href="https://aur.archlinux.org/packages/tosu-overlay/">
-  <img src="https://img.shields.io/aur/version/tosu-overlay?style=for-the-badge" alt="AUR Version">
-</a>
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/k4zoku/tosu-overlay-qt/build.yml?style=for-the-badge)](https://github.com/K4zoku/tosu-overlay-qt/actions/workflows/build.yml)
+[![GitHub Release](https://img.shields.io/github/v/release/k4zoku/tosu-overlay-qt?style=for-the-badge)](https://github.com/K4zoku/tosu-overlay-qt/releases/latest)
+[![AUR Version](https://img.shields.io/aur/version/tosu-overlay?style=for-the-badge)](https://aur.archlinux.org/packages/tosu-overlay/)
 
 ## 💡 About
 <p align="center">
