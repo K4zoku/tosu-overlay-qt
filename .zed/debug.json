@@ -1,0 +1,13 @@
+[
+  {
+    "label": "Debug native binary",
+    "build": {
+      "command": "meson",
+      "args": ["compile", "-C", "build"],
+      "cwd": "$ZED_WORKTREE_ROOT"
+    },
+    "program": "$ZED_WORKTREE_ROOT/build/tosu-overlay",
+    "request": "launch",
+    "adapter": "CodeLLDB"
+  }
+]
