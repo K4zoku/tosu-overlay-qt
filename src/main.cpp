@@ -4,9 +4,41 @@
 
 #include <LayerShellQt/Shell>
 #include <QApplication>
+#include <QByteArray>
+#include <QSurfaceFormat>
+
+namespace {
+constexpr auto kDisableFrameRateLimit = "--disable-frame-rate-limit";
+
+bool hasChromiumFlag(const QByteArray &flags, const QByteArray &flag) {
+  for (const auto &token : flags.split(' ')) {
+    if (token == flag) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void configureRenderingDefaults() {
+  auto surfaceFormat = QSurfaceFormat::defaultFormat();
+  surfaceFormat.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
+  surfaceFormat.setSwapInterval(1);
+  QSurfaceFormat::setDefaultFormat(surfaceFormat);
+
+  auto chromiumFlags = qgetenv("QTWEBENGINE_CHROMIUM_FLAGS");
+  if (!hasChromiumFlag(chromiumFlags, kDisableFrameRateLimit)) {
+    if (!chromiumFlags.isEmpty()) {
+      chromiumFlags.append(' ');
+    }
+    chromiumFlags.append(kDisableFrameRateLimit);
+    qputenv("QTWEBENGINE_CHROMIUM_FLAGS", chromiumFlags);
+  }
+}
+} // namespace
 
 int main(int argc, char *argv[]) {
   LayerShellQt::Shell::useLayerShell();
+  configureRenderingDefaults();
   QApplication app(argc, argv);
   QApplication::setApplicationName(APPLICATION_NAME);
   QApplication::setApplicationDisplayName("Tosu Overlay");
