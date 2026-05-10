@@ -39,8 +39,10 @@ Overlay::Overlay(QWidget *parent) : QWidget(parent) {
   createWinId();
 
   connect(windowHandle(), SIGNAL(visibleChanged(bool)), systemTray, SLOT(onVisibleChange(bool)));
+  connect(windowHandle(), SIGNAL(screenChanged(QScreen *)), webView, SLOT(syncAnimationFrameRate()));
   connect(this, SIGNAL(editingStarted()), systemTray, SLOT(onEditingStarted()));
   connect(this, SIGNAL(editingEnded()), systemTray, SLOT(onEditingEnded()));
+  webView->syncAnimationFrameRate();
 
   systemTray->show();
   emit editingEnded();

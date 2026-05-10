@@ -21,6 +21,7 @@ public slots:
   void onEditingEnded();
   void onLoaded(bool ok);
   void onKeyDown(QString key);
+  void syncAnimationFrameRate();
 
 private:
   QUrl baseUrl;
